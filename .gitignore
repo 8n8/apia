@@ -5,6 +5,5 @@
 !README.md
 !src/
 !stack.yaml
-!test/
 !*.hs
 !.gitignore

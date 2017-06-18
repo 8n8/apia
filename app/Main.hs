@@ -42,10 +42,15 @@ main =
     T.utc2dt <$> Dt.getCurrentTime >>= \now ->
     SEnv.getArgs >>= \args ->
     readFile clockfile >>= \f ->
-    let output = C.chooseActions now args f 
-    in  maybe (return ()) print (C.msg output) >>
-        maybe (return ()) (appendFile clockfile . show) 
-            (C.toFile output)
+    case C.chooseActions now args f of
+        C.Actions Nothing Nothing ->
+            print pathetic
+        C.Actions (Just msg) Nothing ->
+            print msg
+        C.Actions Nothing (Just toFile) ->
+            (appendFile clockfile . show) toFile
+        C.Actions (Just msg) (Just toFile) ->
+            print msg >> (appendFile clockfile . show) toFile
         
 pathetic :: String
 pathetic =
