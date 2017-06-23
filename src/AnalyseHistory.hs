@@ -23,6 +23,7 @@
 -- This module provides functions for extracting useful
 -- data from the history of clocked sessions.
 
+
 module AnalyseHistory where
 
 import qualified ParseClockFile as P
@@ -93,6 +94,26 @@ after x day = x > i2f day + 1
 i2f :: Int -> Float
 i2f = fromIntegral
 
+summary :: P.Clocks -> Float -> Int -> Int 
+      -> Either InternalError [(String,Int)]
+summary f now start stop = (++) <$> breakdown <*> totaltime
+    where
+        totaltime :: Either InternalError [(String, Int)]
+        totaltime = (\a -> [("total", a)]) <$> tagsum []
+        breakdown :: Either InternalError [(String,Int)]
+        breakdown = mapM onetag tags 
+        onetag :: String -> 
+                  Either InternalError (String, Int)
+        onetag tag = (\a -> (tag, a)) <$> tagsum [tag]
+        tags :: [String]
+        tags = getTagsForPeriod now (P.sessions f) start stop
+        -- The number of millidays spent today on the given 
+        -- tag.
+        tagsum :: [String] -> Either InternalError Int
+        tagsum tags' = 
+            (truncate . (1000*) . snd . head) <$>  
+                dailyDurations f start stop tags' now
+
 -- It uses the dailyDurations function to calculate the
 -- amount of work done today for each tag used today.
 today :: P.Clocks -> Float 
@@ -118,13 +139,34 @@ today f now = (++) <$> breakdown <*> totaltime
         dayNum = truncate now
 
 -- It finds all the tags in the clock file that are attached
--- to sessions that have a beginning, end or both today.  
--- All sessions with open clocks are included.
-getTodaysTags :: Float -> [P.Session] -> [String]
-getTodaysTags now = L.nub . concatMap P.taglist . filter test
+-- to sessions that have at least part of their time in the given
+-- time range.
+--
+-- This diagram shows the various alternatives.  The time range end 
+-- points are marked with 'X's:
+-- 
+--                 |<----Session---->|
+-- 1)   X     X    |                 |
+-- 2)              |                 |   X        X
+-- 3)              |   X    X        |
+-- 4)        X     |                 |    X
+-- 5)    X         |    X            |
+-- 6)              |         X       |         X
+-- 
+-- Only (1) and (2) should be excluded, that is, tasks that have both
+-- start and stop times outside the session.
+getTagsForPeriod :: Float -> Int -> Int ->[P.Session] -> [String]
+getTagsForPeriod now start stop = 
+    L.nub . concatMap P.taglist . filter test
     where 
-        test s = (truncFloat . P.begin) s == truncate now ||
-                 P.end s == P.Open
+        test s = not
+            let 
+                sessionEnd = 
+                    case P.end of
+                        P.Open -> now
+                        P.Closed t -> t
+            in
+                stop < P.begin || start > sessionEnd
   
 -- It finds the mean daily time for the tags in
 -- the arguments.
@@ -146,7 +188,7 @@ daymean f start stop tags now =
 
 -- It makes a list of the tags in the clock file.
 getTagList :: [P.Session] -> [String]
-getTagList = L.nub . concatMap P.taglist
+getTagList = L.sort . L.nub . concatMap P.taglist
 
 -- It makes a list of the tags in the argument that are
 -- not in the clock file.

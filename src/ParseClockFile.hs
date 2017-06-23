@@ -33,7 +33,7 @@ data Session = Session { taglist :: [String]
                        , end :: ClockEnd
                        } deriving (Eq, Show)
 
-data ClockEnd = Open | Closed Float deriving (Eq, Show)
+data ClockEnd = Open | Closed Float deriving (Eq, Show, Functor)
 
 data Clocks = Clocks { sessions :: [Session]
                      , clockstate :: ClockFileState } 

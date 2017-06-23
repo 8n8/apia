@@ -33,6 +33,7 @@ data GoodCommand = ClockedIn
                  | Daily Int Int [String]
                  | DailyMean Int Int [String]
                  | Switch [String]
+                 | Summary Int Int
                  | TagList
                  | Today
                  | Total Int Int [String] deriving (Eq, Show)
@@ -57,6 +58,8 @@ argParse ("daily":start:stop:tags) =
 argParse ("dailymean":start:stop:tags) =
     (\(a,o,t) -> DailyMean a o t) <$> 
         toCommand start stop tags
+argParse ("summary":start:stop) =
+    (\(a,o,_) -> Summary a o) <$> toCommand start stop []
 argParse ("switch":tags) 
     | null badTags = Right (Switch tags)
     | otherwise = Left (NumericTags badTags)
