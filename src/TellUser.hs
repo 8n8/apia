@@ -27,6 +27,7 @@ module TellUser where
 
 import qualified AnalyseHistory as H
 import qualified ArgParse as A
+import qualified Data.List as L
 import qualified ParseClockFile as P
 
 data TellUser = HereIsTheClockState P.ClockFileState
@@ -56,14 +57,14 @@ instance Show TellUser where
     show (HereIsTheClockState x) = show x
     show (HereIsYourDailyChart (Left err)) = show err
     show (HereIsYourDailyChart (Right table)) =
-        unlines $ map makeBarForGraphic table
+        L.intercalate "\n" $ map makeBarForGraphic table
     show (HereIsYourDailyMean (Left err)) = show err
     show (HereIsYourDailyMean (Right mean)) = show mean
     show (HereIsYourTagList tags) = unlines tags
     show (HereIsYourTodayChart (Left err) cfs) = 
         show err ++ "\n\n" ++ show cfs
     show (HereIsYourTodayChart (Right table) cfs) =
-        unlines $ printTodayChart cfs table
+        L.intercalate "\n" $ printTodayChart cfs table
     show (HereIsYourTotal (Left err)) = show err
     show (HereIsYourTotal (Right total)) = 
         take 7 (show total) ++ " days"
@@ -72,7 +73,7 @@ instance Show TellUser where
     show (YouAreAlreadyClockedIn tags) = "You are already \
         \clocked in.  The tag" ++
         (if length tags == 1 then " is" else "s are") ++
-        ":\n" ++ unwords tags
+        ":\n" ++ (L.intercalate "\n" tags)
     show YouAreAlreadyClockedOut = "You are already clocked \
         \out."
     show YouCantSwitchWhenYoureClockedOut = "You are \
@@ -88,7 +89,7 @@ instance Show TellUser where
 printTodayChart :: P.ClockFileState -> [(String,Int)]
                 -> [String]
 printTodayChart c xs =
-    map makeString xs ++ ["\n" ++ show c]
+    map makeString xs ++ [show c]
     where
         longestTag :: Int
         longestTag = maximum $ map (length . fst) xs
