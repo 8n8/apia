@@ -33,6 +33,7 @@ data GoodCommand = ClockedIn
                  | Daily Int Int [String]
                  | DailyMean Int Int [String]
                  | Switch [String]
+                 | Summary Int Int
                  | TagList
                  | Today
                  | Total Int Int [String] deriving (Eq, Show)
@@ -57,6 +58,8 @@ argParse ("daily":start:stop:tags) =
 argParse ("dailymean":start:stop:tags) =
     (\(a,o,t) -> DailyMean a o t) <$> 
         toCommand start stop tags
+argParse ["summary", start, stop] =
+    (\(a,o) -> Summary a o) <$> lookForBadStartStop start stop
 argParse ("switch":tags) 
     | null badTags = Right (Switch tags)
     | otherwise = Left (NumericTags badTags)
@@ -75,12 +78,18 @@ toCommand :: String -> String -> [String]
 toCommand start stop tags
     | not . null $ badTags = Left (NumericTags badTags)
     | otherwise = 
-      case (toInt start, toInt stop) of
-          (Nothing, Just _) -> Left StartNotInt
-          (Just _, Nothing) -> Left StopNotInt
-          (Nothing, Nothing) -> Left BothStartAndStopNotInt
-          (Just a, Just b) -> Right (a,b,tags)
+      case lookForBadStartStop start stop of
+          Left err -> Left err
+          Right (a,o) -> Right (a,o,tags)
     where badTags = Dl.filter isNum tags
+
+lookForBadStartStop :: String -> String -> Either BadCommand (Int,Int)
+lookForBadStartStop start stop =
+    case (toInt start, toInt stop) of
+        (Nothing, Just _) -> Left StartNotInt
+        (Just _, Nothing) -> Left StopNotInt
+        (Nothing, Nothing) -> Left BothStartAndStopNotInt
+        (Just a, Just o) -> Right (a, o) 
 
 toInt :: String -> Maybe Int
 toInt x = Tr.readMaybe x :: Maybe Int

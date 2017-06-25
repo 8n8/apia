@@ -35,6 +35,9 @@ data TellUser = HereIsTheClockState P.ClockFileState
                     (Either H.InternalError [(Int,Float)])
               | HereIsYourDailyMean 
                     (Either H.InternalError Int)
+              | HereIsYourSummary
+                    (Either H.InternalError [(String,Int)])
+                    P.ClockFileState
               | HereIsYourTagList [String]
               | HereIsYourTodayChart 
                     (Either H.InternalError [(String,Int)]) 
@@ -62,9 +65,13 @@ instance Show TellUser where
     show (HereIsYourDailyMean (Right mean)) = show mean
     show (HereIsYourTagList tags) = unlines tags
     show (HereIsYourTodayChart (Left err) cfs) = 
-        show err ++ "\n\n" ++ show cfs
+        show err ++ "\n" ++ show cfs
     show (HereIsYourTodayChart (Right table) cfs) =
-        L.intercalate "\n" $ printTodayChart cfs table
+        L.intercalate "\n" $ printSummaryChart cfs table
+    show (HereIsYourSummary (Left err) cfs) =
+        show err ++ "\n" ++ show cfs
+    show (HereIsYourSummary (Right table) cfs) =
+        L.intercalate "\n" $ printSummaryChart cfs table
     show (HereIsYourTotal (Left err)) = show err
     show (HereIsYourTotal (Right total)) = 
         take 7 (show total) ++ " days"
@@ -86,17 +93,42 @@ instance Show TellUser where
 -- It makes the chart that shows how the time has been
 -- spent today.  The inputs are the clock file state and
 -- a list of tag-time pairs.
-printTodayChart :: P.ClockFileState -> [(String,Int)]
+printSummaryChart :: P.ClockFileState -> [(String,Int)]
                 -> [String]
-printTodayChart c xs =
-    map makeString xs ++ [show c]
+printSummaryChart c xs =
+    map makeString (zip sortxs percents) ++ [show c]
     where
-        longestTag :: Int
-        longestTag = maximum $ map (length . fst) xs
-        makeString :: (String,Int) -> String
-        makeString (tag,dur) =
-            toN longestTag tag ++ " " ++ 
-            formatNum (i2f dur) 5
+        sortxs = (L.sortBy sorter . init) xs ++ [last xs]
+        longestTag = maximum $ map (length . fst) sortxs
+        longestNum = maximum $ map (length . show . snd) sortxs
+        total = snd . last $ sortxs
+        percents = map (makePercent total . snd) sortxs
+        maxPercents = maximum $ map length percents 
+        makeString :: ((String,Int),String) -> String
+        makeString ((tag,dur),percent) =
+            toNleft longestTag tag ++ "    " ++ 
+            formatNum (i2f dur) longestNum ++ "    " ++
+            toNright maxPercents percent
+
+sorter :: (String, Int) -> (String, Int) -> Ordering
+sorter (_, first) (_, second) 
+    | first > second = LT
+    | first < second = GT
+    | otherwise = EQ
+
+makePercent :: Int -> Int -> String
+makePercent 0 _ = "0%"
+makePercent total num =
+    show percent ++ "%"
+    where 
+        percent :: Int
+        percent = truncate $ int2float num * 100 / int2float total
+
+int2float :: Int -> Float
+int2float = fromIntegral
+
+numChars :: Int -> Int
+numChars = length . show
 
 -- It takes a number, chops off everything after the
 -- decimal point, and changes it to a string.
@@ -123,12 +155,17 @@ makeBarForGraphic (day,duration) =
 -- It makes a float into a nice shortened string
 -- padded with spaces.
 formatNum :: Float -> Int -> String
-formatNum num n = toN n (num2str num)
+formatNum num n = toNright n (num2str num)
 
 -- It increases the length of a string to a given length
 -- by adding spaces before it.
-toN :: Int -> String -> String
-toN k x = if length x < k then toN k (' ':x) else x
+toNright :: Int -> String -> String
+toNright k x = if length x < k then toNright k (' ':x) else x
+
+-- It increases the length of a string to a given length
+-- by adding spaces at the end of it.
+toNleft :: Int -> String -> String
+toNleft k x = if length x < k then toNleft k (x ++ " ") else x
 
 -- It makes an message to show the user a list of the
 -- new tags.
