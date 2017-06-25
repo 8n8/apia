@@ -106,12 +106,12 @@ summary f now start stop = (++) <$> breakdown <*> totaltime
                   Either InternalError (String, Int)
         onetag tag = (\a -> (tag, a)) <$> tagsum [tag]
         tags :: [String]
-        tags = getTagsForPeriod now (P.sessions f) start stop
+        tags = getTagsForPeriod now start stop (P.sessions f)
         -- The number of millidays spent today on the given 
         -- tag.
         tagsum :: [String] -> Either InternalError Int
         tagsum tags' = 
-            (truncate . (1000*) . snd . head) <$>  
+            (truncate . (1000*) . sum . map snd) <$>
                 dailyDurations f start stop tags' now
 
 -- It uses the dailyDurations function to calculate the
@@ -128,7 +128,7 @@ today f now = (++) <$> breakdown <*> totaltime
                   Either InternalError (String, Int)
         onetag tag = (\a -> (tag, a)) <$> tagsum [tag]
         tags :: [String]
-        tags = getTodaysTags now (P.sessions f)
+        tags = getTagsForPeriod now dayNum dayNum (P.sessions f)
         -- The number of millidays spent today on the given 
         -- tag.
         tagsum :: [String] -> Either InternalError Int
@@ -156,17 +156,20 @@ today f now = (++) <$> breakdown <*> totaltime
 -- Only (1) and (2) should be excluded, that is, tasks that have both
 -- start and stop times outside the session.
 getTagsForPeriod :: Float -> Int -> Int ->[P.Session] -> [String]
-getTagsForPeriod now start stop = 
-    L.nub . concatMap P.taglist . filter test
+getTagsForPeriod now start stop sess = 
+    L.nub . concatMap P.taglist . filter test $ sess
     where 
-        test s = not
+        test :: P.Session -> Bool
+        test s = not (
             let 
                 sessionEnd = 
-                    case P.end of
+                    case P.end s of
                         P.Open -> now
                         P.Closed t -> t
             in
-                stop < P.begin || start > sessionEnd
+                fromIntegral stop < P.begin s || 
+                  fromIntegral start > sessionEnd
+            )
   
 -- It finds the mean daily time for the tags in
 -- the arguments.
