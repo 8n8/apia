@@ -114,30 +114,6 @@ summary f now start stop = (++) <$> breakdown <*> totaltime
             (truncate . (1000*) . sum . map snd) <$>
                 dailyDurations f start stop tags' now
 
--- It uses the dailyDurations function to calculate the
--- amount of work done today for each tag used today.
-today :: P.Clocks -> Float 
-      -> Either InternalError [(String,Int)]
-today f now = (++) <$> breakdown <*> totaltime
-    where
-        totaltime :: Either InternalError [(String, Int)]
-        totaltime = (\a -> [("total", a)]) <$> tagsum []
-        breakdown :: Either InternalError [(String,Int)]
-        breakdown = mapM onetag tags 
-        onetag :: String -> 
-                  Either InternalError (String, Int)
-        onetag tag = (\a -> (tag, a)) <$> tagsum [tag]
-        tags :: [String]
-        tags = getTagsForPeriod now dayNum dayNum (P.sessions f)
-        -- The number of millidays spent today on the given 
-        -- tag.
-        tagsum :: [String] -> Either InternalError Int
-        tagsum tags' = 
-            (truncate . (1000*) . snd . head) <$>  
-                dailyDurations f dayNum dayNum tags' now
-        dayNum :: Int
-        dayNum = truncate now
-
 -- It finds all the tags in the clock file that are attached
 -- to sessions that have at least part of their time in the given
 -- time range.
@@ -155,10 +131,10 @@ today f now = (++) <$> breakdown <*> totaltime
 -- 
 -- Only (1) and (2) should be excluded, that is, tasks that have both
 -- start and stop times outside the session.
-getTagsForPeriod :: Float -> Int -> Int ->[P.Session] -> [String]
+getTagsForPeriod :: Float -> Int -> Int -> [P.Session] -> [String]
 getTagsForPeriod now start stop sess = 
     L.nub . concatMap P.taglist . filter test $ sess
-    where 
+    where
         test :: P.Session -> Bool
         test s = not (
             let 
@@ -167,8 +143,8 @@ getTagsForPeriod now start stop sess =
                         P.Open -> now
                         P.Closed t -> t
             in
-                fromIntegral stop < P.begin s || 
-                  fromIntegral start > sessionEnd
+                stop < truncate (P.begin s) || 
+                  start > truncate sessionEnd
             )
   
 -- It finds the mean daily time for the tags in
