@@ -80,7 +80,7 @@ instance Show TellUser where
     show (YouAreAlreadyClockedIn tags) = "You are already \
         \clocked in.  The tag" ++
         (if length tags == 1 then " is" else "s are") ++
-        ":\n" ++ (L.intercalate "\n" tags)
+        ":\n" ++ L.intercalate "\n" tags
     show YouAreAlreadyClockedOut = "You are already clocked \
         \out."
     show YouCantSwitchWhenYoureClockedOut = "You are \
@@ -96,7 +96,7 @@ instance Show TellUser where
 printSummaryChart :: P.ClockFileState -> [(String,Int)]
                 -> [String]
 printSummaryChart c xs =
-    map makeString (zip sortxs percents) ++ [show c]
+    zipWith makeString sortxs percents ++ [show c]
     where
         sortxs = (L.sortBy sorter . init) xs ++ [last xs]
         longestTag = maximum $ map (length . fst) sortxs
@@ -104,8 +104,8 @@ printSummaryChart c xs =
         total = snd . last $ sortxs
         percents = map (makePercent total . snd) sortxs
         maxPercents = maximum $ map length percents 
-        makeString :: ((String,Int),String) -> String
-        makeString ((tag,dur),percent) =
+        makeString :: (String, Int) -> String -> String
+        makeString (tag, dur) percent =
             toNleft longestTag tag ++ "    " ++ 
             formatNum (i2f dur) longestNum ++ "    " ++
             toNright maxPercents percent

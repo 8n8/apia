@@ -102,8 +102,7 @@ summary f now start stop = (++) <$> breakdown <*> totaltime
         totaltime = (\a -> [("total", a)]) <$> tagsum []
         breakdown :: Either InternalError [(String,Int)]
         breakdown = mapM onetag tags 
-        onetag :: String -> 
-                  Either InternalError (String, Int)
+        onetag :: String -> Either InternalError (String, Int)
         onetag tag = (\a -> (tag, a)) <$> tagsum [tag]
         tags :: [String]
         tags = getTagsForPeriod now start stop (P.sessions f)
@@ -132,8 +131,8 @@ summary f now start stop = (++) <$> breakdown <*> totaltime
 -- Only (1) and (2) should be excluded, that is, tasks that have both
 -- start and stop times outside the session.
 getTagsForPeriod :: Float -> Int -> Int -> [P.Session] -> [String]
-getTagsForPeriod now start stop sess = 
-    L.nub . concatMap P.taglist . filter test $ sess
+getTagsForPeriod now start stop = 
+    L.nub . concatMap P.taglist . filter test
     where
         test :: P.Session -> Bool
         test s = not (

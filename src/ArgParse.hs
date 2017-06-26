@@ -59,7 +59,7 @@ argParse ("dailymean":start:stop:tags) =
     (\(a,o,t) -> DailyMean a o t) <$> 
         toCommand start stop tags
 argParse ["summary", start, stop] =
-    (\(a,o) -> Summary a o) <$> lookForBadStartStop start stop
+    uncurry Summary <$> lookForBadStartStop start stop
 argParse ("switch":tags) 
     | null badTags = Right (Switch tags)
     | otherwise = Left (NumericTags badTags)
