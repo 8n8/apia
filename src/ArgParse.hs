@@ -54,10 +54,9 @@ argParse ("clockin":tags)
     where badTags = Dl.filter isNum tags
 argParse ["clockout"] = Right ClockOut
 argParse ("daily":start:stop:tags) = 
-    (\(a,o,t) -> Daily a o t) <$> toCommand start stop tags
+    uncurry3 Daily <$> toCommand start stop tags
 argParse ("dailymean":start:stop:tags) =
-    (\(a,o,t) -> DailyMean a o t) <$> 
-        toCommand start stop tags
+    uncurry3 DailyMean <$> toCommand start stop tags
 argParse ["summary", start, stop] =
     uncurry Summary <$> lookForBadStartStop start stop
 argParse ("switch":tags) 
@@ -67,8 +66,22 @@ argParse ("switch":tags)
 argParse ["today"] = Right Today
 argParse ["taglist"] = Right TagList
 argParse ("total":start:stop:tags) =
-    (\(a,o,t) -> Total a o t) <$> toCommand start stop tags
+    uncurry3 Total <$> toCommand start stop tags
 argParse _ = Left UnhelpfulFail 
+
+fst3 :: (a,b,c) -> a
+fst3 (x,_,_) = x
+
+snd3 :: (a,b,c) -> b
+snd3 (_,x,_) = x
+
+thd3 :: (a,b,c) -> c
+thd3 (_,_,x) = x
+
+-- Like ordinary 'uncurry', but for functions with three 
+-- inputs instead of two.
+uncurry3 :: (a -> b -> c -> d) -> ((a, b, c) -> d)
+uncurry3 f p = f (fst3 p) (snd3 p) (thd3 p)
 
 -- Some of the commands end with <start time>, <stop time>,
 -- <list of tags>.  This function is used for checking
