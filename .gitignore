@@ -1,9 +1,9 @@
 *
 !LICENSE
-!apia.cabal
 !app/
 !README.md
 !src/
 !stack.yaml
 !*.hs
 !.gitignore
+!package.yaml

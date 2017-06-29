@@ -1,0 +1,31 @@
+name: apia
+version: 1.0.0
+synopsis: A Prize Is Assured is a personal work time logger
+maintainer: 5-o
+license: GPL-3
+
+ghc-options: -Wall -Werror -O2
+
+dependencies:
+  - base >= 4.7 && < 5
+  - containers
+  - directory
+  - text
+  - text-show
+  - time
+
+library:
+  source-dirs: src
+  exposed-modules:
+    - AnalyseHistory
+    - ChooseAction
+    - DecimalTime
+    - ParseClockFile
+    - TellUser
+
+executables:
+  apia:
+    main: Main.hs
+    source-dirs: app
+    dependencies:
+      - apia
