@@ -112,15 +112,9 @@ switcher _ (P.Clocks _ P.Empty) G.ClockOut =
     { msg = Just T.TheClockFileIsEmpty
     , toFile = Nothing }
 switcher t (P.Clocks _ (P.LastClockOpen _)) G.ClockOut = 
-    if (L.nub . L.sort) t == (L.nub . L.sort) oldtags
-    then 
-        Actions
-        { msg = Just T.YouCantSwitchToYourCurrentTask
-        , toFile = Nothing}
-    else
-        Actions
-        { msg = Nothing
-        , toFile = Just (WriteClockOut t) }
+    Actions
+    { msg = Nothing
+    , toFile = Just (WriteClockOut t) }
 switcher _ (P.Clocks _ P.Empty) G.Daily{} = Actions
     { msg = Just T.TheClockFileIsEmpty
     , toFile = Nothing }
@@ -143,12 +137,18 @@ switcher _ (P.Clocks _ P.AllClocksClosed) (G.Switch _) =
     Actions
     { msg = Just T.YouCantSwitchWhenYoureClockedOut
     , toFile = Nothing }
-switcher t (P.Clocks s (P.LastClockOpen _)) (G.Switch tags) =
-    Actions
-    { msg = if not (null new) 
-            then Just (T.YouHaveMadeNewTags new)
-            else Nothing
-    , toFile = Just (WriteSwitch t tags) }
+switcher t (P.Clocks s (P.LastClockOpen oldtags)) (G.Switch tags) =
+    if (L.nub . L.sort) tags == (L.nub . L.sort) oldtags
+    then 
+        Actions
+        { msg = Just T.YouCantSwitchToYourCurrentTask
+        , toFile = Nothing}
+    else
+        Actions
+        { msg = if not (null new) 
+                then Just (T.YouHaveMadeNewTags new)
+                else Nothing
+        , toFile = Just (WriteSwitch t tags) }
     where new = A.newtags s tags
 switcher t f@(P.Clocks _ state) G.Today = Actions  
     { msg = Just (T.HereIsYourTodayChart (A.summary f t d d) state)
