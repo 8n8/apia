@@ -49,6 +49,7 @@ data TellUser = HereIsTheClockState P.ClockFileState
               | YouAreAlreadyClockedIn [String]
               | YouAreAlreadyClockedOut
               | YouCantSwitchWhenYoureClockedOut
+              | YouCantSwitchToYourCurrentTask
               | YouGaveBadArgs A.BadCommand
               | YouHaveMadeNewTags [String]
               | FileParseErr P.InternalParseError
@@ -63,7 +64,7 @@ instance Show TellUser where
         L.intercalate "\n" $ map makeBarForGraphic table
     show (HereIsYourDailyMean (Left err)) = show err
     show (HereIsYourDailyMean (Right mean)) = show mean
-    show (HereIsYourTagList tags) = unlines tags
+    show (HereIsYourTagList tags) = L.intercalate "\n" tags
     show (HereIsYourTodayChart (Left err) cfs) = 
         show err ++ "\n" ++ show cfs
     show (HereIsYourTodayChart (Right table) cfs) =
@@ -86,6 +87,8 @@ instance Show TellUser where
     show YouCantSwitchWhenYoureClockedOut = "You are \
         \already clocked out, so you can't use the 'switch' \
         \option.  Perhaps you want to use 'clockin' instead."
+    show YouCantSwitchToYourCurrentTask = "You are \
+        \already clocked in and working on that task."
     show (YouGaveBadArgs msg) = show msg
     show (YouHaveMadeNewTags tags) = newTagMsg tags
     show (FileParseErr err) = show err

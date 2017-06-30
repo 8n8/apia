@@ -28,6 +28,7 @@ module ChooseAction where
 
 import qualified AnalyseHistory as A
 import qualified ArgParse as G
+import qualified Data.List as L
 import qualified ParseClockFile as P
 import qualified TellUser as T
 
@@ -111,9 +112,15 @@ switcher _ (P.Clocks _ P.Empty) G.ClockOut =
     { msg = Just T.TheClockFileIsEmpty
     , toFile = Nothing }
 switcher t (P.Clocks _ (P.LastClockOpen _)) G.ClockOut = 
-    Actions
-    { msg = Nothing
-    , toFile = Just (WriteClockOut t) }
+    if (L.nub . L.sort) t == (L.nub . L.sort) oldtags
+    then 
+        Actions
+        { msg = Just T.YouCantSwitchToYourCurrentTask
+        , toFile = Nothing}
+    else
+        Actions
+        { msg = Nothing
+        , toFile = Just (WriteClockOut t) }
 switcher _ (P.Clocks _ P.Empty) G.Daily{} = Actions
     { msg = Just T.TheClockFileIsEmpty
     , toFile = Nothing }
