@@ -28,6 +28,7 @@ module AnalyseHistory where
 
 import qualified ParseClockFile as P
 import qualified Data.List as L 
+import qualified Debug.Trace as Deb
 
 truncFloat :: Float -> Int
 truncFloat = truncate 
@@ -104,8 +105,10 @@ summary f now start stop = (++) <$> breakdown <*> totaltime
         breakdown = mapM onetag tags 
         onetag :: String -> Either InternalError (String, Int)
         onetag tag = (\a -> (tag, a)) <$> tagsum [tag]
+        sesses = Deb.trace (show $ P.sessions f) (P.sessions f)
+        debug = getTagsForPeriod now start stop sesses
         tags :: [String]
-        tags = getTagsForPeriod now start stop (P.sessions f)
+        tags = Deb.trace (show debug) debug
         -- The number of millidays spent today on the given 
         -- tag.
         tagsum :: [String] -> Either InternalError Int

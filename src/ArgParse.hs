@@ -141,6 +141,9 @@ instance Show BadCommand where
         \Find the average daily mean work:\n\
         \apia dailymean <start day> <end day> <tag list>\n\
         \\n\
+        \Make a summary chart for a time period:\n\
+        \apia summary <start day> <end day>\n\
+        \\n\
         \Make a chart showing the work done today:\n\
         \apia today\n\
         \\n\
