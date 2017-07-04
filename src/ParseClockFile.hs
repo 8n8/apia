@@ -23,7 +23,16 @@
 -- This module parses the file that contains the clock
 -- records.
 
-module ParseClockFile where
+module ParseClockFile
+    ( Session (..)
+    , BadLines (..)
+    , ClockEnd (..)
+    , Clocks (..)
+    , ClockFileState (..)
+    , InternalParseError (..)
+    , parseClockFile
+    ) where
+
 
 import qualified Data.Either as De
 import qualified Data.List as Dl
@@ -147,8 +156,8 @@ line2sess n ofN now line =
                 Nothing -> Right (Right Session
                     { taglist = 
                         if clockClosed
-                        then init . init . Dl.nub $ line
-                        else init . Dl.nub $ line
+                        then Dl.nub . init . init $ line
+                        else Dl.nub . init $ line
                     , begin = start
                     , end = stop })
     where 

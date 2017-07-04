@@ -24,14 +24,18 @@
 -- data from the history of clocked sessions.
 
 
-module AnalyseHistory where
+module AnalyseHistory 
+    ( dailyDurations
+    , newtags
+    , getTagList
+    , getTagsForPeriod
+    , summary
+    , daymean
+    , InternalError(..)
+    ) where
 
 import qualified ParseClockFile as P
 import qualified Data.List as L 
-import qualified Debug.Trace as Deb
-
-truncFloat :: Float -> Int
-truncFloat = truncate 
 
 -- It calculates the work done each day for the work that
 -- matches the input tags.  The tuples in the output contain
@@ -105,10 +109,8 @@ summary f now start stop = (++) <$> breakdown <*> totaltime
         breakdown = mapM onetag tags 
         onetag :: String -> Either InternalError (String, Int)
         onetag tag = (\a -> (tag, a)) <$> tagsum [tag]
-        sesses = Deb.trace (show $ P.sessions f) (P.sessions f)
-        debug = getTagsForPeriod now start stop sesses
         tags :: [String]
-        tags = Deb.trace (show debug) debug
+        tags = getTagsForPeriod now start stop (P.sessions f)
         -- The number of millidays spent today on the given 
         -- tag.
         tagsum :: [String] -> Either InternalError Int
