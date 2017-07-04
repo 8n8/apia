@@ -13,6 +13,7 @@ dependencies:
   - text
   - text-show
   - time
+  - QuickCheck
 
 library:
   source-dirs: src
@@ -29,3 +30,13 @@ executables:
     source-dirs: app
     dependencies:
       - apia
+
+tests:
+  spec:
+    main: Spec.hs
+    source-dirs: 
+      - test
+      - src
+    dependencies:
+      - tasty
+      - tasty-quickcheck 
