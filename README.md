@@ -30,7 +30,7 @@ Show the amount of work done each day on the tags `work` and `code` between day 
 
 ```apia daily 100 120 work code```
 
-The order of the tags does not matter.
+The order of the tags does not matter.  For the `daily` option and similar, supplying a tag excludes all the records that don't have it, so providing no tags includes everything.
 
 ## Installation
 
