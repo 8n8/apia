@@ -105,7 +105,7 @@ instance Show BadLineType where
         \an open clock."
     show AtLeastOneNumericTag = "One of the tags only \
         \contains numbers.  It should contain at least one \
-        \non-numeric character."
+        \character that is not a number or a decimal point."
 
 parseClockFile 
     :: Float -> String
