@@ -27,23 +27,25 @@ module ArgParse where
 import qualified Data.List as Dl
 import qualified Text.Read as Tr
 
-data GoodCommand = ClockedIn 
-                 | ClockIn [String]
-                 | ClockOut
-                 | Daily Int Int [String]
-                 | DailyMean Int Int [String]
-                 | Switch [String]
-                 | Summary Int Int
-                 | TagList
-                 | Today
-                 | Total Int Int [String] deriving (Eq, Show)
+data GoodCommand = 
+    ClockedIn |
+    ClockIn [String] |
+    ClockOut |
+    Daily Int Int [String] |
+    DailyMean Int Int [String] |
+    Switch [String] |
+    Summary Int Int |
+    TagList |
+    Today |
+    Total Int Int [String] deriving (Eq, Show)
 
-data BadCommand = BothStartAndStopNotInt
-                | NumericTags [String]
-                | StartNotInt
-                | StopNotInt
-                | UnhelpfulFail 
-                | YouNeedAtLeastOneTag deriving Eq
+data BadCommand = 
+    BothStartAndStopNotInt |
+    NumericTags [String] |
+    StartNotInt |
+    StopNotInt |
+    UnhelpfulFail  |
+    YouNeedAtLeastOneTag deriving Eq
 
 argParse :: [String] -> Either BadCommand GoodCommand 
 argParse ["clockedin"] = Right ClockedIn
@@ -91,12 +93,12 @@ toCommand :: String -> String -> [String]
 toCommand start stop tags
     | not . null $ badTags = Left (NumericTags badTags)
     | otherwise = 
-      case lookForBadStartStop start stop of
-          Left err -> Left err
-          Right (a,o) -> Right (a,o,tags)
+      (\(a, o) -> (a, o, tags)) <$> 
+          (lookForBadStartStop start stop)
     where badTags = Dl.filter isNum tags
 
-lookForBadStartStop :: String -> String -> Either BadCommand (Int,Int)
+lookForBadStartStop 
+    :: String -> String -> Either BadCommand (Int,Int)
 lookForBadStartStop start stop =
     case (toInt start, toInt stop) of
         (Nothing, Just _) -> Left StartNotInt

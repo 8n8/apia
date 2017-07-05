@@ -95,6 +95,11 @@ after x day = x > i2f day + 1
 i2f :: Int -> Float
 i2f = fromIntegral
 
+-- It takes in the contents of the clock file after parsing,
+-- the current time, and a start and stop day.  The result is
+-- a list of tuples, each tuple containing a unique tag in its
+-- first element, and the total work done on it in milliDays in 
+-- its second element.
 summary 
     :: P.Clocks -> Float -> Int -> Int 
     -> Either InternalError [(String,Int)]

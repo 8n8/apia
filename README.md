@@ -10,13 +10,17 @@ Start work on a task with two tags, `work` and `code`:
 
 ```apia clockin work code```
 
+Switch to a task with tags `job` and `new`:
+
+```apia switch job new``` 
+
 Stop work:
 
 ```apia clockout```
 
-Switch to a task with tags `job` and `new`:
+Find out if you are currently clocked in:
 
-```apia switch job new``` 
+```apia clockedin```
 
 Make a chart showing a breakdown of the work done today:
 
@@ -34,7 +38,7 @@ The order of the tags does not matter.  For the `daily` option and similar, supp
 
 ## Installation
 
-You will need the Haskell Tool Stack installed.  I have only tested this installation in Arch Linux, but it should work on any Linux distribution.  After cloning this repository, run `stack setup`, then `stack build` in it to compile.  You can then run the Apia commands from within the directory containing the code by preceding them with `stack exec`. The usage instructions can be viewed with `stack exec apia`.  The binary is buried quite deep inside a folder called .stack-work.  The exact path is shown after compiling with `stack build`.  It is convenient to make a soft link to it from one of the directories on your PATH with the command 
+I have only tested this installation in Arch Linux, but it should work on any Linux distribution.  You will need the Haskell Tool Stack installed.  After cloning this repository, run `stack setup`, then `stack build` in it to compile.  You can then run the Apia commands from within the directory containing the code by preceding them with `stack exec`. The usage instructions can be viewed with `stack exec apia`.  The binary is buried quite deep inside a folder called .stack-work.  The exact path is shown after compiling with `stack build`.  It is convenient to make a soft link to it from one of the directories on your PATH with the command 
 
 ```ln -s /path/to/apia/binary /usr/bin```
 
