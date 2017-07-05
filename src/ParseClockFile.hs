@@ -79,11 +79,12 @@ data BadLine = BadLine { errType :: BadLineType
 newtype BadLines = BadLines [BadLine] deriving Eq
 
 instance Show BadLines where
-    show (BadLines xs) = unlines $ map show xs
+    show (BadLines xs) = 
+        Dl.intercalate "\n" (map show xs)
 
 instance Show BadLine where
     show (BadLine err linenum) =
-        "Error in clock file on line " ++ show linenum ++
+        "* Error in clock file on line " ++ show linenum ++
         ":\n" ++ show err
 
 instance Show BadLineType where
