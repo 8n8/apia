@@ -24,7 +24,10 @@
 -- the message for the user and the string to write in
 -- the clock file.
 
-module ChooseAction where 
+module ChooseAction 
+    ( chooseActions
+    , Actions (..)
+    ) where 
 
 import qualified AnalyseHistory as A
 import qualified ArgParse as G

@@ -22,7 +22,11 @@
 
 -- This module parses the command-line arguments.
 
-module ArgParse where
+module ArgParse 
+    ( GoodCommand (..)
+    , BadCommand
+    , argParse
+    ) where
 
 import qualified Data.List as Dl
 import qualified Text.Read as Tr

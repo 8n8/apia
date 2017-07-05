@@ -26,7 +26,9 @@
 -- (UTC) see 
 -- https://en.wikipedia.org/wiki/Coordinated_Universal_Time.
 
-module DecimalTime where
+module DecimalTime 
+    ( utc2dt
+    ) where
 
 import qualified Data.Time as Dt
 import qualified Data.Time.Clock as Dtc

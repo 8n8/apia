@@ -23,7 +23,9 @@
 -- This module provides a type that represents messages
 -- to the user.
 
-module TellUser where
+module TellUser
+    ( TellUser (..)
+    ) where
 
 import qualified AnalyseHistory as H
 import qualified ArgParse as A
@@ -129,9 +131,6 @@ makePercent total num =
 
 int2float :: Int -> Float
 int2float = fromIntegral
-
-numChars :: Int -> Int
-numChars = length . show
 
 -- It takes a number, chops off everything after the
 -- decimal point, and changes it to a string.

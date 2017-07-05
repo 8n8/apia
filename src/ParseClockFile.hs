@@ -24,12 +24,12 @@
 -- records.
 
 module ParseClockFile
-    ( Session (..)
-    , BadLines (..)
+    ( BadLines (..)
     , ClockEnd (..)
-    , Clocks (..)
     , ClockFileState (..)
+    , Clocks (..)
     , InternalParseError (..)
+    , Session (..)
     , parseClockFile
     ) where
 
