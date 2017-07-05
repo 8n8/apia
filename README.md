@@ -14,6 +14,10 @@ Stop work:
 
 ```apia clockout```
 
+Switch to a task with tags `job` and `new`:
+
+```apia switch job new``` 
+
 Make a chart showing a breakdown of the work done today:
 
 ```apia today```
@@ -25,6 +29,8 @@ Make a summary of the work done between day 100 and day 120:
 Show the amount of work done each day on the tags `work` and `code` between day 100 and day 120:
 
 ```apia daily 100 120 work code```
+
+The order of the tags does not matter.
 
 ## Installation
 
