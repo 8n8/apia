@@ -55,6 +55,7 @@ data TellUser = HereIsTheClockState P.ClockFileState
               | YouGaveBadArgs A.BadCommand
               | YouHaveMadeNewTags [String]
               | FileParseErr P.InternalParseError
+              | TheTimeIs Float
 
 i2f :: Int -> Float
 i2f = fromIntegral
@@ -83,7 +84,7 @@ instance Show TellUser where
     show (YouAreAlreadyClockedIn tags) = "You are already \
         \clocked in.  The tag" ++
         (if length tags == 1 then " is" else "s are") ++
-        ":\n" ++ L.intercalate "\n" tags
+        ":\n" ++ unwords tags
     show YouAreAlreadyClockedOut = "You are already clocked \
         \out."
     show YouCantSwitchWhenYoureClockedOut = "You are \
@@ -94,6 +95,7 @@ instance Show TellUser where
     show (YouGaveBadArgs msg) = show msg
     show (YouHaveMadeNewTags tags) = newTagMsg tags
     show (FileParseErr err) = show err
+    show (TheTimeIs t) = show t
 
 -- It makes the chart that shows how the time has been
 -- spent today.  The inputs are the clock file state and

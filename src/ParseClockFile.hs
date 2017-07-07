@@ -37,50 +37,56 @@ module ParseClockFile
 import qualified Data.Either as De
 import qualified Data.List as Dl
 
-data Session = Session { taglist :: [String]
-                       , begin :: Float
-                       , end :: ClockEnd
-                       } deriving (Eq, Show)
+data Session = Session 
+    { taglist :: [String]
+    , begin :: Float
+    , end :: ClockEnd
+    } deriving (Eq, Show)
 
 data ClockEnd = Open | Closed Float deriving (Eq, Show)
 
-data Clocks = Clocks { sessions :: [Session]
-                     , clockstate :: ClockFileState } 
-                     deriving (Eq, Show)
+data Clocks = Clocks 
+    { sessions :: [Session]
+    , clockstate :: ClockFileState } 
+    deriving (Eq, Show)
 
-data ClockFileState = LastClockOpen [String] 
-                    | AllClocksClosed
-                    | Empty deriving Eq
+data ClockFileState = 
+    LastClockOpen [String] |
+    AllClocksClosed |
+    Empty deriving Eq
 
 instance Show ClockFileState where
-    show (LastClockOpen tags) = "The clock at the end of \
-        \the file is open.  Its tag" ++ 
-        (case tags of 
-             [] -> "\n\n Internal error:  Can't show \
-                    \LastClockOpen tags because there \
-                    \aren't any."
-             [_] -> " is"
-             _ -> "s are") ++ ":\n" ++ unwords tags 
+    show (LastClockOpen []) = "Internal error:  Can't show \
+        \LastClockOpen tags because there aren't any."
+    show (LastClockOpen tags@[_]) = 
+        startString ++ " is:\n" ++ unwords tags
+    show (LastClockOpen tags) = 
+        startString ++ "s are:\n" ++ unwords tags
     show AllClocksClosed = "All the clocks are closed."
     show Empty = "The clock file is empty."
 
-data BadLineType = BeginTimeIsInTheFuture 
-                 | EmptyLine
-                 | EndTimeIsInTheFuture
-                 | EndTimeIsBeforeBeginTime
-                 | LastWordNotNumeric
-                 | OnlyOneWordOnLine
-                 | OpenClockNotOnLastLine
-                 | AtLeastOneNumericTag deriving Eq
+startString :: String
+startString = 
+    "The clock at the end of the file is open. It's tag"
 
-data BadLine = BadLine { errType :: BadLineType
-                       , lineNum :: Int } deriving Eq
+data BadLineType = 
+    BeginTimeIsInTheFuture  |
+    EmptyLine |
+    EndTimeIsInTheFuture |
+    EndTimeIsBeforeBeginTime |
+    LastWordNotNumeric |
+    OnlyOneWordOnLine |
+    OpenClockNotOnLastLine |
+    AtLeastOneNumericTag deriving Eq
+
+data BadLine = BadLine 
+    { errType :: BadLineType
+    , lineNum :: Int } deriving Eq
 
 newtype BadLines = BadLines [BadLine] deriving Eq
 
 instance Show BadLines where
-    show (BadLines xs) = 
-        Dl.intercalate "\n" (map show xs)
+    show (BadLines xs) = Dl.intercalate "\n" (map show xs)
 
 instance Show BadLine where
     show (BadLine err linenum) =

@@ -37,6 +37,7 @@ data GoodCommand =
     ClockOut |
     Daily Int Int [String] |
     DailyMean Int Int [String] |
+    Now |
     Switch [String] |
     Summary Int Int |
     TagList |
@@ -52,6 +53,7 @@ data BadCommand =
     YouNeedAtLeastOneTag deriving Eq
 
 argParse :: [String] -> Either BadCommand GoodCommand 
+argParse ["now"] = Right Now
 argParse ["clockedin"] = Right ClockedIn
 argParse ["clockin"] = Left YouNeedAtLeastOneTag
 argParse ("clockin":tags) 

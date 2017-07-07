@@ -167,3 +167,6 @@ switcher t f (G.Total start stop tags) = Actions
     { msg = Just (T.HereIsYourTotal ((sum . map snd) <$> 
          A.dailyDurations f start stop tags t))
     , toFile = Nothing }
+switcher t _ G.Now = Actions
+    { msg = Just (T.TheTimeIs t)
+    , toFile = Nothing }
