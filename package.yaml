@@ -29,3 +29,14 @@ executables:
     source-dirs: app
     dependencies:
       - apia
+
+tests:
+  spec:
+    main: Test.hs
+    source-dirs:
+      - test
+      - src
+    dependencies:
+      - tasty
+      - tasty-hunit
+      - HUnit-approx

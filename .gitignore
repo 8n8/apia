@@ -3,6 +3,7 @@
 !app/
 !README.md
 !src/
+!test/
 !stack.yaml
 !*.hs
 !.gitignore
