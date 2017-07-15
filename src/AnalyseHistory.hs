@@ -62,9 +62,10 @@ dailyDurations f start stop tags now =
 all1in2 :: [String] -> [String] -> Bool
 all1in2 one two = L.all (`elem` two) one
 
-data InternalError = EachDayBadPatternMatchOpen
-                   | EachDayBadPatternMatchClosed
-                   deriving (Eq, Ord, Show)
+data InternalError =
+    EachDayBadPatternMatchOpen |
+    EachDayBadPatternMatchClosed
+    deriving (Eq, Ord, Show)
 
 -- It takes in a day number and a session and gives the
 -- amount of the session's time that was on that day.

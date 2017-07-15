@@ -32,30 +32,32 @@ import qualified ArgParse as A
 import qualified Data.List as L
 import qualified ParseClockFile as P
 
-data TellUser = HereIsTheClockState P.ClockFileState
-              | HereIsYourDailyChart 
-                    (Either H.InternalError [(Int,Float)])
-              | HereIsYourDailyMean 
-                    (Either H.InternalError Int)
-              | HereIsYourSummary
-                    (Either H.InternalError [(String,Int)])
-                    P.ClockFileState
-              | HereIsYourTagList [String]
-              | HereIsYourTodayChart 
-                    (Either H.InternalError [(String,Int)]) 
-                    P.ClockFileState
-              | HereIsYourTotal 
-                    (Either H.InternalError Float)
-              | TheClockFileIsBad P.BadLines
-              | TheClockFileIsEmpty
-              | YouAreAlreadyClockedIn [String]
-              | YouAreAlreadyClockedOut
-              | YouCantSwitchWhenYoureClockedOut
-              | YouCantSwitchToYourCurrentTask
-              | YouGaveBadArgs A.BadCommand
-              | YouHaveMadeNewTags [String]
-              | FileParseErr P.InternalParseError
-              | TheTimeIs Float deriving Eq
+data TellUser =
+    HereIsTheClockState P.ClockFileState |
+    HereIsYourDailyChart
+        (Either H.InternalError [(Int,Float)]) |
+    HereIsYourDailyMean
+        (Either H.InternalError Int) |
+    HereIsYourSummary
+        (Either H.InternalError [(String,Int)])
+        P.ClockFileState |
+    HereIsYourTagList [String] |
+    HereIsYourTodayChart 
+        (Either H.InternalError [(String,Int)]) 
+        P.ClockFileState |
+    HereIsYourTotal 
+        (Either H.InternalError Float) |
+    TheClockFileIsBad P.BadLines |
+    TheClockFileIsEmpty |
+    YouAreAlreadyClockedIn [String] |
+    YouAreAlreadyClockedOut |
+    YouCantSwitchWhenYoureClockedOut |
+    YouCantSwitchToYourCurrentTask |
+    YouGaveBadArgs A.BadCommand |
+    YouHaveMadeNewTags [String] |
+    FileParseErr P.InternalParseError |
+    TheTimeIs Float
+        deriving Eq
 
 i2f :: Int -> Float
 i2f = fromIntegral

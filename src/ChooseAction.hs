@@ -35,12 +35,14 @@ import qualified Data.List as L
 import qualified ParseClockFile as P
 import qualified TellUser as T
 
-data Actions = Actions { msg :: Maybe T.TellUser
-                       , toFile :: Maybe Do2File } deriving (Eq, Show)
+data Actions = Actions
+    { msg :: Maybe T.TellUser
+    , toFile :: Maybe Do2File } deriving (Eq, Show)
 
-data Do2File = WriteClockOut Float
-             | WriteClockIn Float [String]
-             | WriteSwitch Float [String] deriving Eq
+data Do2File =
+    WriteClockOut Float |
+    WriteClockIn Float [String] |
+    WriteSwitch Float [String] deriving Eq
 
 instance Show Do2File where
     show (WriteClockOut now) = ' ':show now ++ "\n"
