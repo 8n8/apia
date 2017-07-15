@@ -49,33 +49,38 @@ data BadCommand =
     NumericTags [String] |
     StartNotInt |
     StopNotInt |
+    StartIsInTheFuture |
+    StopIsInTheFuture |
     UnhelpfulFail  |
     YouNeedAtLeastOneTag deriving Eq
 
-argParse :: [String] -> Either BadCommand GoodCommand 
-argParse ["now"] = Right Now
-argParse ["clockedin"] = Right ClockedIn
-argParse ["clockin"] = Left YouNeedAtLeastOneTag
-argParse ("clockin":tags) 
+i2f :: Int -> Float
+i2f = fromIntegral
+
+argParse :: Float -> [String] -> Either BadCommand GoodCommand 
+argParse _ ["now"] = Right Now
+argParse _ ["clockedin"] = Right ClockedIn
+argParse _ ["clockin"] = Left YouNeedAtLeastOneTag
+argParse _ ("clockin":tags) 
     | null badTags = Right (ClockIn tags)
     | otherwise = Left (NumericTags badTags)
     where badTags = Dl.filter isNum tags
-argParse ["clockout"] = Right ClockOut
-argParse ("daily":start:stop:tags) = 
-    uncurry3 Daily <$> toCommand start stop tags
-argParse ("dailymean":start:stop:tags) =
-    uncurry3 DailyMean <$> toCommand start stop tags
-argParse ["summary", start, stop] =
-    uncurry Summary <$> lookForBadStartStop start stop
-argParse ("switch":tags) 
+argParse _ ["clockout"] = Right ClockOut
+argParse now ("daily":start:stop:tags) = 
+    uncurry3 Daily <$> toCommand now start stop tags
+argParse now ("dailymean":start:stop:tags) =
+    uncurry3 DailyMean <$> toCommand now start stop tags
+argParse now ["summary", start, stop] =
+    uncurry Summary <$> lookForBadStartStop now start stop
+argParse _ ("switch":tags) 
     | null badTags = Right (Switch tags)
     | otherwise = Left (NumericTags badTags)
     where badTags = Dl.filter isNum tags
-argParse ["today"] = Right Today
-argParse ["taglist"] = Right TagList
-argParse ("total":start:stop:tags) =
-    uncurry3 Total <$> toCommand start stop tags
-argParse _ = Left UnhelpfulFail 
+argParse _ ["today"] = Right Today
+argParse _ ["taglist"] = Right TagList
+argParse now ("total":start:stop:tags) =
+    uncurry3 Total <$> toCommand now start stop tags
+argParse _ _ = Left UnhelpfulFail 
 
 fst3 :: (a,b,c) -> a
 fst3 (x,_,_) = x
@@ -94,22 +99,28 @@ uncurry3 f p = f (fst3 p) (snd3 p) (thd3 p)
 -- Some of the commands end with <start time>, <stop time>,
 -- <list of tags>.  This function is used for checking
 -- that part and turning it into the right form.
-toCommand :: String -> String -> [String] 
+toCommand :: Float -> String -> String -> [String] 
           -> Either BadCommand (Int,Int,[String])
-toCommand start stop tags
+toCommand now start stop tags
     | not . null $ badTags = Left (NumericTags badTags)
     | otherwise = 
-      (\(a, o) -> (a, o, tags)) <$> lookForBadStartStop start stop
+      (\(a, o) -> (a, o, tags)) <$> lookForBadStartStop now start stop
     where badTags = Dl.filter isNum tags
 
 lookForBadStartStop 
-    :: String -> String -> Either BadCommand (Int,Int)
-lookForBadStartStop start stop =
-    case (toInt start, toInt stop) of
-        (Nothing, Just _) -> Left StartNotInt
-        (Just _, Nothing) -> Left StopNotInt
-        (Nothing, Nothing) -> Left BothStartAndStopNotInt
-        (Just a, Just o) -> Right (a, o) 
+    :: Float -> String -> String -> Either BadCommand (Int,Int)
+lookForBadStartStop now start stop =
+    case (now, toInt start, toInt stop) of
+        (_, Nothing, Just _) -> Left StartNotInt
+        (_, Just _, Nothing) -> Left StopNotInt
+        (_, Nothing, Nothing) -> Left BothStartAndStopNotInt
+        (now', Just a, Just o) -> checkStartStopInPast now' a o
+
+checkStartStopInPast :: Float -> Int -> Int -> Either BadCommand (Int, Int)
+checkStartStopInPast now start stop 
+    | now < i2f start = Left StartIsInTheFuture
+    | now < i2f stop = Left StopIsInTheFuture
+    | otherwise = Right (start, stop)
 
 toInt :: String -> Maybe Int
 toInt x = Tr.readMaybe x :: Maybe Int
@@ -123,6 +134,10 @@ instance Show BadCommand where
         \the right form.  It should be a whole number."
     show StopNotInt = "The stop time you gave was not in \
         \the right form.  It should be a whole number."
+    show StartIsInTheFuture = "The start time you gave is \
+        \in the future."
+    show StopIsInTheFuture = "The stop time you gave is in \
+        \the future."
     show BothStartAndStopNotInt = "Both the start and stop \
         \you gave were not in the right form.  They should \
         \be whole numbers."

@@ -33,8 +33,16 @@ summary = TT.testGroup "summary"
     [ HU.testCase "empty" $
         summary1 HU.@?= Right [("total", 0)]
     , HU.testCase "simple" $
-        summary2 HU.@?= Right sums ]
+        summary2 HU.@?= Right sums 
+    , HU.testCase "old bug" $
+        summary3 HU.@?= Right sums3 ]
   where
+    summary3 =
+        A.summary (P.Clocks sess3 (P.LastClockOpen ["c", "a"])) 287.9003 2 287
+    sess3 = 
+        [ P.Session [ "x" ] 2.8 (P.Closed 3)
+        , P.Session ["c", "a"] 286.8 P.Open ]
+    sums3 = [ ("a", 1100), ("c", 1100), ("x", 200), ("total", 1300)]
     summary1 = 
         A.summary (P.Clocks [] P.Empty) 0 0 0
     summary2 = 

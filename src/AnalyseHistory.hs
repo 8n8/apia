@@ -67,6 +67,13 @@ data InternalError =
     EachDayBadPatternMatchClosed
     deriving (Eq, Ord, Show)
 
+total :: [P.Session] -> Float -> Int -> Int -> Either InternalError Float
+total s now start stop =
+    sum <$> mapM sesstot s 
+  where  
+    sesstot :: P.Session -> Either InternalError Float
+    sesstot sess = sum <$> mapM (\d -> eachDay d now sess) [start..stop]
+
 -- It takes in a day number and a session and gives the
 -- amount of the session's time that was on that day.
 eachDay :: Int -> Float -> P.Session 
@@ -113,19 +120,21 @@ summary
 summary f now start stop = (++) <$> breakdown <*> totaltime
   where
     totaltime :: Either InternalError [(String, Int)]
-    totaltime = (\a -> [("total", a)]) <$> tagsum tags 
+    totaltime = (\a -> [("total", a)]) <$> tot
+    tot :: Either InternalError Int
+    tot = (truncate . (1000*)) <$> total (P.sessions f) now start stop
     breakdown :: Either InternalError [(String,Int)]
     breakdown = mapM onetag tags 
     onetag :: String -> Either InternalError (String, Int)
-    onetag tag = (\a -> (tag, a)) <$> tagsum [tag]
+    onetag tag = (\a -> (tag, a)) <$> tagsum tag
     tags :: [String]
     tags = getTagsForPeriod now start stop (P.sessions f)
     -- The number of millidays spent today on the given 
     -- tag.
-    tagsum :: [String] -> Either InternalError Int
-    tagsum tags' = 
+    tagsum :: String -> Either InternalError Int
+    tagsum tag = 
         (truncate . (1000*) . sum . map snd) <$>
-            dailyDurations f start stop tags' now
+            dailyDurations f start stop [tag] now
 
 -- It finds all the tags in the clock file that are attached
 -- to sessions that have at least part of their time in the given

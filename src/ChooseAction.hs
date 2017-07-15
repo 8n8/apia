@@ -75,7 +75,7 @@ chooseActions now args fileContents =
     fileData :: Either P.InternalParseError 
                   (Either P.BadLines P.Clocks)
     fileData = P.parseClockFile now fileContents
-    parsedArgs = G.argParse args
+    parsedArgs = G.argParse now args
 
 -- It makes the line to write to the clock file when
 -- clocking in.
