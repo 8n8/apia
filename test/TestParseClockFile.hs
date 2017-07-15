@@ -21,13 +21,12 @@ parseClockFile = TT.testGroup "parseClockFile"
         
 sess1 :: [P.Session]
 sess1 =
-    [ 
-      P.Session ["a"] 1 (P.Closed 1.2)
+    [ P.Session ["a"] 1 (P.Closed 1.2)
     , P.Session ["oo", "ooo"] 3 (P.Closed 3.4)
     ]
 
 file1 :: String
 file1 = "\
-\a 1 1.2\n\
-\ooo ooo ooo oo 3 3.4"
+    \a 1 1.2\n\
+    \ooo ooo ooo oo 3 3.4"
 

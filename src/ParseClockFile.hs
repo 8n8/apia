@@ -139,8 +139,9 @@ file2sess
 file2sess now f = 
     sequence [ line2sess n ofN now line | 
                (n,line) <- zip [1..] lns ]
-    where lns = map words . lines $ f
-          ofN = length lns
+  where 
+    lns = map words . lines $ f
+    ofN = length lns
 
 -- It converts a line in the clock file to a Session, or a 
 -- BadLine if it is wrong.  The first argument is the line
@@ -168,12 +169,12 @@ line2sess n ofN now line =
                         else Dl.sort . Dl.nub . init $ line
                     , begin = start
                     , end = stop })
-    where 
-        clockClosed = isNum . last . init $ line
-        (start, stop) = if clockClosed 
-                        then ( s2f . last . init $ line
-                             , Closed (s2f $ last line) )
-                        else ( s2f $ last line, Open )
+  where 
+    clockClosed = isNum . last . init $ line
+    (start, stop) = if clockClosed 
+                    then ( s2f . last . init $ line
+                         , Closed (s2f $ last line) )
+                    else ( s2f $ last line, Open )
             
 data WordType = Tag | Clock deriving Eq
 
@@ -188,8 +189,8 @@ lookForBadWords :: [String] ->
     Either InternalParseError (Maybe BadLineType)
 lookForBadWords [] = Left LookForBadWordsGivenEmptyList 
 lookForBadWords s = parseBackwards . reverse $ wordTypes
-    where wordTypes =
-              map (\x -> if isNum x then Clock else Tag) s
+  where 
+    wordTypes = map (\x -> if isNum x then Clock else Tag) s
 
 parseBackwards :: [WordType] -> 
     Either InternalParseError (Maybe BadLineType)

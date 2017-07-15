@@ -106,18 +106,18 @@ printSummaryChart :: P.ClockFileState -> [(String,Int)]
                 -> [String]
 printSummaryChart c xs =
     zipWith makeString sortxs percents ++ [show c]
-    where
-        sortxs = (L.sortBy sorter . init) xs ++ [last xs]
-        longestTag = maximum $ map (length . fst) sortxs
-        longestNum = maximum $ map (length . show . snd) sortxs
-        total = snd . last $ sortxs
-        percents = map (makePercent total . snd) sortxs
-        maxPercents = maximum $ map length percents 
-        makeString :: (String, Int) -> String -> String
-        makeString (tag, dur) percent =
-            toNleft longestTag tag ++ "    " ++ 
-            formatNum (i2f dur) longestNum ++ "    " ++
-            toNright maxPercents percent
+  where
+    sortxs = (L.sortBy sorter . init) xs ++ [last xs]
+    longestTag = maximum $ map (length . fst) sortxs
+    longestNum = maximum $ map (length . show . snd) sortxs
+    total = snd . last $ sortxs
+    percents = map (makePercent total . snd) sortxs
+    maxPercents = maximum $ map length percents 
+    makeString :: (String, Int) -> String -> String
+    makeString (tag, dur) percent =
+        toNleft longestTag tag ++ "    " ++ 
+        formatNum (i2f dur) longestNum ++ "    " ++
+        toNright maxPercents percent
 
 sorter :: (String, Int) -> (String, Int) -> Ordering
 sorter (_, first) (_, second) 
@@ -129,9 +129,9 @@ makePercent :: Int -> Int -> String
 makePercent 0 _ = "0%"
 makePercent total num =
     show percent ++ "%"
-    where 
-        percent :: Int
-        percent = truncate $ int2float num * 100 / int2float total
+  where 
+    percent :: Int
+    percent = truncate $ int2float num * 100 / int2float total
 
 int2float :: Int -> Float
 int2float = fromIntegral
@@ -152,11 +152,11 @@ makeBarForGraphic :: (Int,Float) -> String
 makeBarForGraphic (day,duration) =
     show day ++ formatNum (duration * 1000) 5 ++
     ' ':replicate barLen '#'
-    where
-        -- The multiplier of 75 is about right so that
-        -- the bars are a reasonable length but not too long.
-        barLen :: Int
-        barLen = truncate (duration * 75)
+  where
+    -- The multiplier of 75 is about right so that
+    -- the bars are a reasonable length but not too long.
+    barLen :: Int
+    barLen = truncate (duration * 75)
 
 -- It makes a float into a nice shortened string
 -- padded with spaces.
@@ -178,12 +178,13 @@ toNleft k x = if length x < k then toNleft k (x ++ " ") else x
 newTagMsg :: [String] -> String
 newTagMsg tags = "Note that you have made " ++ plural ++
     ":\n" ++ unwords tags
-    where
-        len = length tags
-        plural :: String
-        plural = if len == 1
-                 then "a new tag"
-                 else niceNum len ++ " new tags"
+  where
+    len = length tags
+    plural :: String
+    plural = 
+        if len == 1
+        then "a new tag"
+        else niceNum len ++ " new tags"
 
 niceNum :: Int -> String
 niceNum x = case x of

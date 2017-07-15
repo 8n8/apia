@@ -21,12 +21,12 @@ daymean = TT.testGroup "daymean"
         A.daymean (P.Clocks [] P.Empty) 0 0 [] 0 HU.@?= Right 0
     , HU.testCase "simple" $
         A.daymean clcks 5 10 tags 11.2 HU.@?= Right 0.9666667 ]
-    where
-        tags = ["a", "b"]
-        clcks = P.Clocks
-            [ P.Session ["b", "o", "a"] 7 P.Open
-            , P.Session ["d", "zz", "b", "a"] 6.5 (P.Closed 8.3) ]
-            (P.LastClockOpen ["b", "o", "a"])
+  where
+    tags = ["a", "b"]
+    clcks = P.Clocks
+        [ P.Session ["b", "o", "a"] 7 P.Open
+        , P.Session ["d", "zz", "b", "a"] 6.5 (P.Closed 8.3) ]
+        (P.LastClockOpen ["b", "o", "a"])
 
 summary :: TT.TestTree
 summary = TT.testGroup "summary"
@@ -34,19 +34,14 @@ summary = TT.testGroup "summary"
         summary1 HU.@?= Right [("total", 0)]
     , HU.testCase "simple" $
         summary2 HU.@?= Right sums ]
-    where
-        summary1 = 
-            A.summary (P.Clocks [] P.Empty) 0 0 0
-        summary2 = 
-            A.summary (P.Clocks sesses (P.LastClockOpen ["b"])) 8.888 3 6
-        sums = [("^", 99), ("b", 99), ("total", 99)]
-        -- = [ ("^", 100), ("b", 2700), ("total", 2700) ]
-        sesses = 
-            [ P.Session [ "^", "b" ] 3 (P.Closed 3.1) ]
-            -- , P.Session [ "b" ] 1 (P.Closed 5.5)
-            -- , P.Session [ "^" ] 6 (P.Closed 7.2)
-            -- , P.Session [ "b" ] 5.9 P.Open
-            -- ]
+  where
+    summary1 = 
+        A.summary (P.Clocks [] P.Empty) 0 0 0
+    summary2 = 
+        A.summary (P.Clocks sesses (P.LastClockOpen ["b"])) 8.888 3 6
+    sums = [("^", 99), ("b", 99), ("total", 99)]
+    sesses = 
+        [ P.Session [ "^", "b" ] 3 (P.Closed 3.1) ]
     
 getTagsForPeriod :: TT.TestTree
 getTagsForPeriod = TT.testGroup "getTagsForPeriod"
@@ -56,15 +51,15 @@ getTagsForPeriod = TT.testGroup "getTagsForPeriod"
         A.getTagsForPeriod 5.44 2 3 sesses HU.@?= tags
     , HU.testCase "edge" $
         A.getTagsForPeriod 8.888 3 6 extra HU.@?= ["^", "b"]]
-    where
-        tags = [ "z", "£", "££" ]
-        extra =
-            [ P.Session [ "^", "b" ] 3 (P.Closed 3.1) ]
-        sesses =
-            [ P.Session [ "z", "z" ] 0 P.Open
-            , P.Session [ "aa" ] 1.5 (P.Closed 2)
-            , P.Session [ "££", "£" ] 2.6 (P.Closed 4)
-            , P.Session [ "a" ] 1.1 (P.Closed 1.3) ]
+  where
+    tags = [ "z", "£", "££" ]
+    extra =
+        [ P.Session [ "^", "b" ] 3 (P.Closed 3.1) ]
+    sesses =
+        [ P.Session [ "z", "z" ] 0 P.Open
+        , P.Session [ "aa" ] 1.5 (P.Closed 2)
+        , P.Session [ "££", "£" ] 2.6 (P.Closed 4)
+        , P.Session [ "a" ] 1.1 (P.Closed 1.3) ]
 
 getTagList :: TT.TestTree
 getTagList = TT.testGroup "getTagList"
@@ -74,14 +69,14 @@ getTagList = TT.testGroup "getTagList"
         A.getTagList sessions HU.@?= [ "a" ]
     , HU.testCase "bigger" $
         A.getTagList bigsess HU.@?= tags ]
-    where
-        tags = [ "$b", "a", "aa", "bb", "zto" ]
-        bigsess = 
-            [ P.Session [ "aa", "$b" ] 1 P.Open
-            , P.Session [ "zto", "bb" ] 0 (P.Closed 3)
-            , P.Session [ "a", "zto", "aa" ] 111 (P.Closed 2) ]
-        sessions =
-            [ P.Session [ "a", "a" ] 1 P.Open ]
+  where
+    tags = [ "$b", "a", "aa", "bb", "zto" ]
+    bigsess = 
+        [ P.Session [ "aa", "$b" ] 1 P.Open
+        , P.Session [ "zto", "bb" ] 0 (P.Closed 3)
+        , P.Session [ "a", "zto", "aa" ] 111 (P.Closed 2) ]
+    sessions =
+        [ P.Session [ "a", "a" ] 1 P.Open ]
 
 newtags :: TT.TestTree
 newtags = TT.testGroup "newtags"
@@ -89,13 +84,13 @@ newtags = TT.testGroup "newtags"
         A.newtags sessions tags HU.@?= ["d", "ee"]
     , HU.testCase "empty" $
         A.newtags emptysess [] HU.@?= [] ]
-    where
-        emptysess = 
-            [ P.Session [] 0 (P.Closed 0) ]
-        tags = [ "b", "ee", "a", "d", "ee" ]
-        sessions =
-            [ P.Session ["a"] 1 (P.Closed 2)
-            , P.Session ["a", "b", "c"] 3 (P.Closed 4) ]
+  where
+    emptysess = 
+        [ P.Session [] 0 (P.Closed 0) ]
+    tags = [ "b", "ee", "a", "d", "ee" ]
+    sessions =
+        [ P.Session ["a"] 1 (P.Closed 2)
+        , P.Session ["a", "b", "c"] 3 (P.Closed 4) ]
 
 dailyDurations :: TT.TestTree
 dailyDurations = TT.testGroup "Daily durations"
@@ -104,22 +99,22 @@ dailyDurations = TT.testGroup "Daily durations"
     , HU.testCase "four sessions" $
         eqTupLists 
             actual moreoutput HU.@?= True ]
-    where
-        output = Right [(0,0)] 
-        minhist = 
-            P.Clocks [ P.Session ["a"] 0 (P.Closed 0) ] 
+  where
+    output = Right [(0,0)] 
+    minhist = 
+        P.Clocks [ P.Session ["a"] 0 (P.Closed 0) ] 
+            P.AllClocksClosed
+    moreoutput = Right 
+        [ (276, 0), (277, 0.1), (278, 0), (279, 0.3) ]
+    actual = A.dailyDurations morehist 276 279 moretags 279.9
+    moretags = ["asdf"]
+    morehist = 
+        P.Clocks
+            [ P.Session ["asdf", "a"] 277.8 (P.Closed 277.9)
+            , P.Session ["onion"] 277.8776 (P.Closed 277.87772)
+            , P.Session ["a","b"] 277.87772 (P.Closed 277.9108)
+            , P.Session ["asdf"] 279.5 (P.Closed 279.8)]
                 P.AllClocksClosed
-        moreoutput = Right 
-            [ (276, 0), (277, 0.1), (278, 0), (279, 0.3) ]
-        actual = A.dailyDurations morehist 276 279 moretags 279.9
-        moretags = ["asdf"]
-        morehist = 
-            P.Clocks
-                [ P.Session ["asdf", "a"] 277.8 (P.Closed 277.9)
-                , P.Session ["onion"] 277.8776 (P.Closed 277.87772)
-                , P.Session ["a","b"] 277.87772 (P.Closed 277.9108)
-                , P.Session ["asdf"] 279.5 (P.Closed 279.8)]
-                    P.AllClocksClosed
 
 eqTupLists 
     :: Either A.InternalError [(Int, Float)] 

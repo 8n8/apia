@@ -71,11 +71,11 @@ chooseActions now args fileContents =
             { msg = Just (T.FileParseErr intErr)
             , toFile = Nothing }
         (Right (Right f), Right a) -> switcher now f a
-    where 
-        fileData :: Either P.InternalParseError 
-                      (Either P.BadLines P.Clocks)
-        fileData = P.parseClockFile now fileContents
-        parsedArgs = G.argParse args
+  where 
+    fileData :: Either P.InternalParseError 
+                  (Either P.BadLines P.Clocks)
+    fileData = P.parseClockFile now fileContents
+    parsedArgs = G.argParse args
 
 -- It makes the line to write to the clock file when
 -- clocking in.
