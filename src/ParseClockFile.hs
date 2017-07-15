@@ -24,7 +24,8 @@
 -- records.
 
 module ParseClockFile
-    ( BadLines (..)
+    (
+      BadLines (..)
     , ClockEnd (..)
     , ClockFileState (..)
     , Clocks (..)
@@ -163,8 +164,8 @@ line2sess n ofN now line =
                 Nothing -> Right (Right Session
                     { taglist = 
                         if clockClosed
-                        then Dl.nub . init . init $ line
-                        else Dl.nub . init $ line
+                        then Dl.sort . Dl.nub . init . init $ line
+                        else Dl.sort . Dl.nub . init $ line
                     , begin = start
                     , end = stop })
     where 

@@ -24,7 +24,7 @@
 
 module ArgParse 
     ( GoodCommand (..)
-    , BadCommand
+    , BadCommand (..)
     , argParse
     ) where
 
@@ -99,8 +99,7 @@ toCommand :: String -> String -> [String]
 toCommand start stop tags
     | not . null $ badTags = Left (NumericTags badTags)
     | otherwise = 
-      (\(a, o) -> (a, o, tags)) <$> 
-          (lookForBadStartStop start stop)
+      (\(a, o) -> (a, o, tags)) <$> lookForBadStartStop start stop
     where badTags = Dl.filter isNum tags
 
 lookForBadStartStop 

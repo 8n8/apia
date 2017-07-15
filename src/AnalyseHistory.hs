@@ -64,15 +64,21 @@ all1in2 one two = L.all (`elem` two) one
 
 data InternalError = EachDayBadPatternMatchOpen
                    | EachDayBadPatternMatchClosed
-                   deriving (Eq, Show)
+                   deriving (Eq, Ord, Show)
 
 -- It takes in a day number and a session and gives the
 -- amount of the session's time that was on that day.
 eachDay :: Int -> Float -> P.Session 
         -> Either InternalError Float
 eachDay day now (P.Session _ begin P.Open)
-    | begin `before` day = Right (now - i2f day)
-    | begin `during` day = Right (now - begin)
+    | begin `before` day = Right (
+        if now > (i2f day + 1)
+        then 1
+        else now - i2f day )
+    | begin `during` day = Right (
+        if now > (i2f day + 1)
+        then i2f day + 1 - begin
+        else now - begin )
     | begin `after` day = Right 0
     | otherwise = Left EachDayBadPatternMatchOpen
 eachDay day _ (P.Session _ begin (P.Closed end))
@@ -106,7 +112,7 @@ summary
 summary f now start stop = (++) <$> breakdown <*> totaltime
     where
         totaltime :: Either InternalError [(String, Int)]
-        totaltime = (\a -> [("total", a)]) <$> tagsum []
+        totaltime = (\a -> [("total", a)]) <$> tagsum tags 
         breakdown :: Either InternalError [(String,Int)]
         breakdown = mapM onetag tags 
         onetag :: String -> Either InternalError (String, Int)
@@ -139,7 +145,7 @@ summary f now start stop = (++) <$> breakdown <*> totaltime
 -- start and stop times outside the session.
 getTagsForPeriod :: Float -> Int -> Int -> [P.Session] -> [String]
 getTagsForPeriod now start stop = 
-    L.nub . concatMap P.taglist . filter test
+    L.sort . L.nub . concatMap P.taglist . filter test
     where
         test :: P.Session -> Bool
         test s = not (
@@ -149,8 +155,8 @@ getTagsForPeriod now start stop =
                         P.Open -> now
                         P.Closed t -> t
             in
-                stop < truncate (P.begin s) || 
-                  start > truncate sessionEnd
+                i2f stop <= P.begin s || 
+                  i2f start >= sessionEnd
             )
   
 -- It finds the mean daily time for the tags in
@@ -163,8 +169,7 @@ daymean f start stop tags now =
         -- It is a list of the daily totals of work matching
         -- the tags.
         byday :: Either InternalError [Float]
-        byday = 
-            map snd <$> dailyDurations f start stop tags now
+        byday = map snd <$> dailyDurations f start stop tags now
         -- It is the period of time the mean is taken over.
         -- The +1 is so that it counts both ends of the 
         -- period.
@@ -178,5 +183,5 @@ getTagList = L.sort . L.nub . concatMap P.taglist
 -- It makes a list of the tags in the argument that are
 -- not in the clock file.
 newtags :: [P.Session] -> [String] -> [String]
-newtags s tags = filter (`notElem` oldtags) $ L.nub tags
+newtags s tags = L.sort . filter (`notElem` oldtags) $ L.nub tags
     where oldtags = getTagList s

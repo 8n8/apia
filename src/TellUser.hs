@@ -55,7 +55,7 @@ data TellUser = HereIsTheClockState P.ClockFileState
               | YouGaveBadArgs A.BadCommand
               | YouHaveMadeNewTags [String]
               | FileParseErr P.InternalParseError
-              | TheTimeIs Float
+              | TheTimeIs Float deriving Eq
 
 i2f :: Int -> Float
 i2f = fromIntegral
