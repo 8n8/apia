@@ -128,44 +128,10 @@ instance Show BadCommand where
         \be whole numbers."
     show YouNeedAtLeastOneTag = "You need to provide at \
         \least one tag."
-    show UnhelpfulFail = "Apia 1.0.0 (2017-04-16) \n\n\
+    show UnhelpfulFail = "Apia 1.0.0 (2017-04-16) \n\
         \Copyright (C) 5-o 2017.  Licensed under \
         \the GNU General Public License Version 3.\n\
-        \\n\
-        \USAGE\n=====\n\n\
-        \Find out if clocked in:\n\
-        \apia clockedin\n\
-        \\n\
-        \Clock in:\n\
-        \apia clockin <tag list>\n\
-        \\n\
-        \Clock out:\n\
-        \apia clockout\n\
-        \\n\
-        \Make a day-by-day work bar chart:\n\
-        \apia daily <start day> <end day> <tag list>\n\
-        \\n\
-        \Find the average daily mean work:\n\
-        \apia dailymean <start day> <end day> <tag list>\n\
-        \\n\
-        \Make a summary chart for a time period:\n\
-        \apia summary <start day> <end day>\n\
-        \\n\
-        \Make a chart showing the work done today:\n\
-        \apia today\n\
-        \\n\
-        \Make a list of all the current tags:\n\
-        \apia taglist\n\
-        \\n\
-        \Work out the total work done during a period:\n\
-        \apia total <start day> <end day> <tag list> \n\n\
-        \Note that the time used is in days since 00:00 on \
-        \1 October 2016, so there are no years, months, \
-        \weeks hours, minutes or seconds.  This is a lot \
-        \more convenient when you get used to it.  The \
-        \tags lists should be separated by spaces.  Each \
-        \tag excludes all sessions that do not have the \
-        \tag, so no tags means that everything is included."
+        \Read the README for usage instructions."
 
 isNum :: String -> Bool
 isNum = Dl.all (`elem` "1234567890.")

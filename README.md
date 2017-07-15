@@ -5,7 +5,7 @@ APIA (A Prize is Assured) is a personal work time logger written in Haskell.  It
 ## Time format
 The time is in days since 00:00 on 1st October 2016 in UTC, so there are no years, months, weeks, hours, minutes or seconds, just days.  This is very convenient for programming and reasoning with.
 
-## Examples
+## Usage
 Start work on a task with two tags, `work` and `code`:
 
 ```apia clockin work code```
@@ -34,7 +34,17 @@ Show the amount of work done each day on the tags `work` and `code` between day 
 
 ```apia daily 100 120 work code```
 
+Make a list of the current tags:
+
+```apia taglist```
+
+Find the average daily work on the tags `work` and `code` between days 101 and 102:
+
+```apia dailymean 101 102 work code```
+
 The order of the tags does not matter.  For the `daily` option and similar, supplying a tag excludes all the records that don't have it, so providing no tags includes everything.
+
+The day range results include both end days.  If just one day's results is required then the same day number should be given for the start and end.
 
 ## Installation
 
