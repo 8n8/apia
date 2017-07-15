@@ -119,18 +119,24 @@ summary
     -> Either InternalError [(String,Int)]
 summary f now start stop = (++) <$> breakdown <*> totaltime
   where
+    breakdown = totalOnEachTag f now start stop
     totaltime :: Either InternalError [(String, Int)]
     totaltime = (\a -> [("total", a)]) <$> tot
     tot :: Either InternalError Int
     tot = (truncate . (1000*)) <$> total (P.sessions f) now start stop
-    breakdown :: Either InternalError [(String,Int)]
-    breakdown = mapM onetag tags 
+
+-- It works out the total time spent on each tag in the given time period.
+totalOnEachTag
+    :: P.Clocks -> Float -> Int -> Int
+    -> Either InternalError [(String,Int)]
+totalOnEachTag f now start stop =
+    mapM onetag tags 
+  where
+    -- The total spent on one tag.
     onetag :: String -> Either InternalError (String, Int)
     onetag tag = (\a -> (tag, a)) <$> tagsum tag
     tags :: [String]
     tags = getTagsForPeriod now start stop (P.sessions f)
-    -- The number of millidays spent today on the given 
-    -- tag.
     tagsum :: String -> Either InternalError Int
     tagsum tag = 
         (truncate . (1000*) . sum . map snd) <$>
