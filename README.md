@@ -46,9 +46,13 @@ The order of the tags does not matter.  For the `daily` option and similar, supp
 
 The day range results include both end days.  If just one day's results is required then the same day number should be given for the start and end.
 
+To get the day number for today:
+
+```apia now```
+
 ## Installation
 
-I have only tested this installation in Arch Linux, but it should work on any Linux distribution.  You will need the Haskell Tool Stack installed.  After cloning this repository, run `stack setup`, then `stack build` in it to compile.  You can then run the Apia commands from within the directory containing the code by preceding them with `stack exec`. The usage instructions can be viewed with `stack exec apia`.  The binary is buried quite deep inside a folder called .stack-work.  The exact path is shown after compiling with `stack build`.  It is convenient to make a soft link to it from one of the directories on your PATH with the command 
+I have only tested this installation in Arch Linux, but I don't see why it shouldn't work anywhere.  You will need the Haskell Tool Stack installed.  After cloning this repository, run `stack setup`, then `stack build` in it to compile.  You can then run the Apia commands from within the directory containing the code by preceding them with `stack exec`.  The binary is buried quite deep inside a folder called .stack-work.  The exact path is shown after compiling with `stack build`.  It is convenient to make a soft link to it from one of the directories on your PATH with the command 
 
 ```ln -s /path/to/apia/binary /usr/bin```
 
