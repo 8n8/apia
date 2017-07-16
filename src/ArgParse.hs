@@ -19,45 +19,45 @@
 -- DESCRIPTION
 -- This module parses the command-line arguments.
 module ArgParse
-  ( GoodCommand(..)
-  , BadCommand(..)
-  , argParse
-  ) where
+    ( GoodCommand(..)
+    , BadCommand(..)
+    , argParse
+    ) where
 
 import qualified Data.List as Dl
 import qualified Text.Read as Tr
 
 data GoodCommand
-  = ClockedIn
-  | ClockIn [String]
-  | ClockOut
-  | Daily Int
-          Int
-          [String]
-  | DailyMean Int
-              Int
-              [String]
-  | Now
-  | Switch [String]
-  | Summary Int
+    = ClockedIn
+    | ClockIn [String]
+    | ClockOut
+    | Daily Int
             Int
-  | TagList
-  | Today
-  | Total Int
-          Int
-          [String]
-  deriving (Eq, Show)
+            [String]
+    | DailyMean Int
+                Int
+                [String]
+    | Now
+    | Switch [String]
+    | Summary Int
+              Int
+    | TagList
+    | Today
+    | Total Int
+            Int
+            [String]
+    deriving (Eq, Show)
 
 data BadCommand
-  = BothStartAndStopNotInt
-  | NumericTags [String]
-  | StartNotInt
-  | StopNotInt
-  | StartIsInTheFuture
-  | StopIsInTheFuture
-  | UnhelpfulFail
-  | YouNeedAtLeastOneTag
-  deriving (Eq)
+    = BothStartAndStopNotInt
+    | NumericTags [String]
+    | StartNotInt
+    | StopNotInt
+    | StartIsInTheFuture
+    | StopIsInTheFuture
+    | UnhelpfulFail
+    | YouNeedAtLeastOneTag
+    deriving (Eq)
 
 i2f :: Int -> Float
 i2f = fromIntegral
@@ -67,26 +67,26 @@ argParse _ ["now"] = Right Now
 argParse _ ["clockedin"] = Right ClockedIn
 argParse _ ["clockin"] = Left YouNeedAtLeastOneTag
 argParse _ ("clockin":tags)
-  | null badTags = Right (ClockIn tags)
-  | otherwise = Left (NumericTags badTags)
+    | null badTags = Right (ClockIn tags)
+    | otherwise = Left (NumericTags badTags)
   where
     badTags = Dl.filter isNum tags
 argParse _ ["clockout"] = Right ClockOut
 argParse now ("daily":start:stop:tags) =
-  uncurry3 Daily <$> toCommand now start stop tags
+    uncurry3 Daily <$> toCommand now start stop tags
 argParse now ("dailymean":start:stop:tags) =
-  uncurry3 DailyMean <$> toCommand now start stop tags
+    uncurry3 DailyMean <$> toCommand now start stop tags
 argParse now ["summary", start, stop] =
-  uncurry Summary <$> lookForBadStartStop now start stop
+    uncurry Summary <$> lookForBadStartStop now start stop
 argParse _ ("switch":tags)
-  | null badTags = Right (Switch tags)
-  | otherwise = Left (NumericTags badTags)
+    | null badTags = Right (Switch tags)
+    | otherwise = Left (NumericTags badTags)
   where
     badTags = Dl.filter isNum tags
 argParse _ ["today"] = Right Today
 argParse _ ["taglist"] = Right TagList
 argParse now ("total":start:stop:tags) =
-  uncurry3 Total <$> toCommand now start stop tags
+    uncurry3 Total <$> toCommand now start stop tags
 argParse _ _ = Left UnhelpfulFail
 
 fst3 :: (a, b, c) -> a
@@ -107,61 +107,62 @@ uncurry3 f p = f (fst3 p) (snd3 p) (thd3 p)
 -- <list of tags>.  This function is used for checking
 -- that part and turning it into the right form.
 toCommand ::
-     Float
-  -> String
-  -> String
-  -> [String]
-  -> Either BadCommand (Int, Int, [String])
+       Float
+    -> String
+    -> String
+    -> [String]
+    -> Either BadCommand (Int, Int, [String])
 toCommand now start stop tags
-  | not . null $ badTags = Left (NumericTags badTags)
-  | otherwise = (\(a, o) -> (a, o, tags)) <$> lookForBadStartStop now start stop
+    | not . null $ badTags = Left (NumericTags badTags)
+    | otherwise =
+        (\(a, o) -> (a, o, tags)) <$> lookForBadStartStop now start stop
   where
     badTags = Dl.filter isNum tags
 
 lookForBadStartStop :: Float -> String -> String -> Either BadCommand (Int, Int)
 lookForBadStartStop now start stop =
-  case (now, toInt start, toInt stop) of
-    (_, Nothing, Just _) -> Left StartNotInt
-    (_, Just _, Nothing) -> Left StopNotInt
-    (_, Nothing, Nothing) -> Left BothStartAndStopNotInt
-    (now', Just a, Just o) -> checkStartStopInPast now' a o
+    case (now, toInt start, toInt stop) of
+        (_, Nothing, Just _) -> Left StartNotInt
+        (_, Just _, Nothing) -> Left StopNotInt
+        (_, Nothing, Nothing) -> Left BothStartAndStopNotInt
+        (now', Just a, Just o) -> checkStartStopInPast now' a o
 
 checkStartStopInPast :: Float -> Int -> Int -> Either BadCommand (Int, Int)
 checkStartStopInPast now start stop
-  | now < i2f start = Left StartIsInTheFuture
-  | now < i2f stop = Left StopIsInTheFuture
-  | otherwise = Right (start, stop)
+    | now < i2f start = Left StartIsInTheFuture
+    | now < i2f stop = Left StopIsInTheFuture
+    | otherwise = Right (start, stop)
 
 toInt :: String -> Maybe Int
 toInt x = Tr.readMaybe x :: Maybe Int
 
 instance Show BadCommand where
-  show (NumericTags xs) =
-    "Tags should have at least one \
+    show (NumericTags xs) =
+        "Tags should have at least one \
         \non-numeric character in them.  There was a \
         \problem with the following:\n" ++
-    Dl.intercalate "\n" xs
-  show StartNotInt =
-    "The start time you gave was not in \
+        Dl.intercalate "\n" xs
+    show StartNotInt =
+        "The start time you gave was not in \
         \the right form.  It should be a whole number."
-  show StopNotInt =
-    "The stop time you gave was not in \
+    show StopNotInt =
+        "The stop time you gave was not in \
         \the right form.  It should be a whole number."
-  show StartIsInTheFuture =
-    "The start time you gave is \
+    show StartIsInTheFuture =
+        "The start time you gave is \
         \in the future."
-  show StopIsInTheFuture =
-    "The stop time you gave is in \
+    show StopIsInTheFuture =
+        "The stop time you gave is in \
         \the future."
-  show BothStartAndStopNotInt =
-    "Both the start and stop \
+    show BothStartAndStopNotInt =
+        "Both the start and stop \
         \you gave were not in the right form.  They should \
         \be whole numbers."
-  show YouNeedAtLeastOneTag =
-    "You need to provide at \
+    show YouNeedAtLeastOneTag =
+        "You need to provide at \
         \least one tag."
-  show UnhelpfulFail =
-    "Apia 1.0.0 (2017-04-16) \n\
+    show UnhelpfulFail =
+        "Apia 1.0.0 (2017-04-16) \n\
         \Copyright (C) 5-o 2017.  Licensed under \
         \the GNU General Public License Version 3.\n\
         \Read the README for usage instructions."

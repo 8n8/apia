@@ -24,9 +24,9 @@
 -- the message for the user and the string to write in
 -- the clock file.
 module ChooseAction
-  ( chooseActions
-  , Actions(..)
-  ) where
+    ( chooseActions
+    , Actions(..)
+    ) where
 
 import qualified AnalyseHistory as A
 import qualified ArgParse as G
@@ -35,22 +35,22 @@ import qualified ParseClockFile as P
 import qualified TellUser as T
 
 data Actions = Actions
-  { msg :: Maybe T.TellUser
-  , toFile :: Maybe Do2File
-  } deriving (Eq, Show)
+    { msg :: Maybe T.TellUser
+    , toFile :: Maybe Do2File
+    } deriving (Eq, Show)
 
 data Do2File
-  = WriteClockOut Float
-  | WriteClockIn Float
-                 [String]
-  | WriteSwitch Float
-                [String]
-  deriving (Eq)
+    = WriteClockOut Float
+    | WriteClockIn Float
+                   [String]
+    | WriteSwitch Float
+                  [String]
+    deriving (Eq)
 
 instance Show Do2File where
-  show (WriteClockOut now) = ' ' : show now ++ "\n"
-  show (WriteClockIn now tags) = clockLn tags now
-  show (WriteSwitch now tags) = ' ' : show now ++ "\n" ++ clockLn tags now
+    show (WriteClockOut now) = ' ' : show now ++ "\n"
+    show (WriteClockIn now tags) = clockLn tags now
+    show (WriteSwitch now tags) = ' ' : show now ++ "\n" ++ clockLn tags now
 
 -- This does everything.  It takes in the current time,
 -- the list of input arguments, and the file contents, and
@@ -63,13 +63,14 @@ chooseActions now args fileContents
     -- unlikely pattern matches, and the inner layer contains
     -- errors in the clock file.
  =
-  case (fileData, parsedArgs) of
-    (_, Left a) -> Actions {msg = Just (T.YouGaveBadArgs a), toFile = Nothing}
-    (Right (Left f), _) ->
-      Actions {msg = Just (T.TheClockFileIsBad f), toFile = Nothing}
-    (Left intErr, _) ->
-      Actions {msg = Just (T.FileParseErr intErr), toFile = Nothing}
-    (Right (Right f), Right a) -> switcher now f a
+    case (fileData, parsedArgs) of
+        (_, Left a) ->
+            Actions {msg = Just (T.YouGaveBadArgs a), toFile = Nothing}
+        (Right (Left f), _) ->
+            Actions {msg = Just (T.TheClockFileIsBad f), toFile = Nothing}
+        (Left intErr, _) ->
+            Actions {msg = Just (T.FileParseErr intErr), toFile = Nothing}
+        (Right (Right f), Right a) -> switcher now f a
   where
     fileData :: Either P.InternalParseError (Either P.BadLines P.Clocks)
     fileData = P.parseClockFile now fileContents
@@ -85,88 +86,92 @@ clockLn tags now = unwords tags ++ ' ' : show now
 -- should have been sorted beforehand.
 switcher :: Float -> P.Clocks -> G.GoodCommand -> Actions
 switcher _ (P.Clocks _ state) G.ClockedIn =
-  Actions {msg = Just (T.HereIsTheClockState state), toFile = Nothing}
+    Actions {msg = Just (T.HereIsTheClockState state), toFile = Nothing}
 switcher t (P.Clocks s P.AllClocksClosed) (G.ClockIn tags) =
-  Actions
-  { msg =
-      if not (null new)
-        then Just (T.YouHaveMadeNewTags new)
-        else Nothing
-  , toFile = Just (WriteClockIn t tags)
-  }
+    Actions
+    { msg =
+          if not (null new)
+              then Just (T.YouHaveMadeNewTags new)
+              else Nothing
+    , toFile = Just (WriteClockIn t tags)
+    }
   where
     new = A.newtags s tags
 switcher t (P.Clocks s P.Empty) (G.ClockIn tags) =
-  Actions
-  { msg =
-      if not (null new)
-        then Just (T.YouHaveMadeNewTags new)
-        else Nothing
-  , toFile = Just (WriteClockIn t tags)
-  }
+    Actions
+    { msg =
+          if not (null new)
+              then Just (T.YouHaveMadeNewTags new)
+              else Nothing
+    , toFile = Just (WriteClockIn t tags)
+    }
   where
     new = A.newtags s tags
 switcher _ (P.Clocks s (P.LastClockOpen _)) (G.ClockIn _) =
-  Actions {msg = Just (T.YouAreAlreadyClockedIn tags), toFile = Nothing}
+    Actions {msg = Just (T.YouAreAlreadyClockedIn tags), toFile = Nothing}
   where
     tags = P.taglist . last $ s
 switcher _ (P.Clocks _ P.AllClocksClosed) G.ClockOut =
-  Actions {msg = Just T.YouAreAlreadyClockedOut, toFile = Nothing}
+    Actions {msg = Just T.YouAreAlreadyClockedOut, toFile = Nothing}
 switcher _ (P.Clocks _ P.Empty) G.ClockOut =
-  Actions {msg = Just T.TheClockFileIsEmpty, toFile = Nothing}
+    Actions {msg = Just T.TheClockFileIsEmpty, toFile = Nothing}
 switcher t (P.Clocks _ (P.LastClockOpen _)) G.ClockOut =
-  Actions {msg = Nothing, toFile = Just (WriteClockOut t)}
+    Actions {msg = Nothing, toFile = Just (WriteClockOut t)}
 switcher _ (P.Clocks _ P.Empty) G.Daily {} =
-  Actions {msg = Just T.TheClockFileIsEmpty, toFile = Nothing}
+    Actions {msg = Just T.TheClockFileIsEmpty, toFile = Nothing}
 switcher t f (G.Daily start stop tags) =
-  Actions
-  { msg = Just (T.HereIsYourDailyChart (A.dailyDurations f start stop tags t))
-  , toFile = Nothing
-  }
+    Actions
+    { msg = Just (T.HereIsYourDailyChart (A.dailyDurations f start stop tags t))
+    , toFile = Nothing
+    }
 switcher _ (P.Clocks _ P.Empty) G.DailyMean {} =
-  Actions {msg = Just T.TheClockFileIsEmpty, toFile = Nothing}
+    Actions {msg = Just T.TheClockFileIsEmpty, toFile = Nothing}
 switcher t f (G.DailyMean start stop tags) =
-  Actions
-  { msg =
-      Just
-        (T.HereIsYourDailyMean
-           ((truncate . (1000 *)) <$> A.daymean f start stop tags t))
-  , toFile = Nothing
-  }
+    Actions
+    { msg =
+          Just
+              (T.HereIsYourDailyMean
+                   ((truncate . (1000 *)) <$> A.daymean f start stop tags t))
+    , toFile = Nothing
+    }
 switcher _ (P.Clocks _ P.Empty) (G.Switch _) =
-  Actions {msg = Just T.TheClockFileIsEmpty, toFile = Nothing}
+    Actions {msg = Just T.TheClockFileIsEmpty, toFile = Nothing}
 switcher _ (P.Clocks _ P.AllClocksClosed) (G.Switch _) =
-  Actions {msg = Just T.YouCantSwitchWhenYoureClockedOut, toFile = Nothing}
+    Actions {msg = Just T.YouCantSwitchWhenYoureClockedOut, toFile = Nothing}
 switcher t (P.Clocks s (P.LastClockOpen oldtags)) (G.Switch tags) =
-  if (L.nub . L.sort) tags == (L.nub . L.sort) oldtags
-    then Actions {msg = Just T.YouCantSwitchToYourCurrentTask, toFile = Nothing}
-    else Actions
-         { msg =
-             if not (null new)
-               then Just (T.YouHaveMadeNewTags new)
-               else Nothing
-         , toFile = Just (WriteSwitch t tags)
-         }
+    if (L.nub . L.sort) tags == (L.nub . L.sort) oldtags
+        then Actions
+             {msg = Just T.YouCantSwitchToYourCurrentTask, toFile = Nothing}
+        else Actions
+             { msg =
+                   if not (null new)
+                       then Just (T.YouHaveMadeNewTags new)
+                       else Nothing
+             , toFile = Just (WriteSwitch t tags)
+             }
   where
     new = A.newtags s tags
 switcher t f@(P.Clocks _ state) G.Today =
-  Actions
-  { msg = Just (T.HereIsYourTodayChart (A.summary f t d d) state)
-  , toFile = Nothing
-  }
+    Actions
+    { msg = Just (T.HereIsYourTodayChart (A.summary f t d d) state)
+    , toFile = Nothing
+    }
   where
     d = truncate t
 switcher t f@(P.Clocks _ state) (G.Summary a o) =
-  Actions
-  {msg = Just (T.HereIsYourSummary (A.summary f t a o) state), toFile = Nothing}
+    Actions
+    { msg = Just (T.HereIsYourSummary (A.summary f t a o) state)
+    , toFile = Nothing
+    }
 switcher _ (P.Clocks s _) G.TagList =
-  Actions {msg = Just (T.HereIsYourTagList (A.getTagList s)), toFile = Nothing}
+    Actions
+    {msg = Just (T.HereIsYourTagList (A.getTagList s)), toFile = Nothing}
 switcher t f (G.Total start stop tags) =
-  Actions
-  { msg =
-      Just
-        (T.HereIsYourTotal
-           ((sum . map snd) <$> A.dailyDurations f start stop tags t))
-  , toFile = Nothing
-  }
+    Actions
+    { msg =
+          Just
+              (T.HereIsYourTotal
+                   ((sum . map snd) <$> A.dailyDurations f start stop tags t))
+    , toFile = Nothing
+    }
 switcher t _ G.Now = Actions {msg = Just (T.TheTimeIs t), toFile = Nothing}
