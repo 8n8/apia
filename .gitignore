@@ -8,3 +8,5 @@
 !*.hs
 !.gitignore
 !package.yaml
+!usage
+!firstPartOfReadme

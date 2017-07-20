@@ -1,0 +1,14 @@
+# APIA
+## Description
+APIA (A Prize is Assured) is a personal work time logger written in Haskell.  It has a command-line interface.  The data is kept in a plain text file at ~/.apia. 
+
+## Installation
+
+I have only tested this installation in Arch Linux, but I don't see why it shouldn't work anywhere.  You will need the Haskell Tool Stack installed.  After cloning this repository, run `stack setup`, then `stack build` in it to compile.  You can then run the Apia commands from within the directory containing the code by preceding them with `stack exec`.  The binary is buried quite deep inside a folder called .stack-work.  The exact path is shown after compiling with `stack build`.  It is convenient to make a soft link to it from one of the directories on your PATH with the command 
+
+```ln -s /path/to/apia/binary /usr/bin```
+
+so that you can use the `apia` command from any directory.
+
+## Usage examples
+
