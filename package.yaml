@@ -4,7 +4,7 @@ synopsis: A Prize Is Assured is a personal work time logger
 maintainer: 5-o
 license: GPL-3
 
-ghc-options: -Wall -Werror -O2
+ghc-options: -Wall -O2
 
 dependencies:
   - base >= 4.7 && < 5

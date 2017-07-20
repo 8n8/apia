@@ -5,14 +5,23 @@ APIA (A Prize is Assured) is a personal work time logger written in Haskell.  It
 ## Time format
 The time is in days since 00:00 on 1st October 2016 in UTC, so there are no years, months, weeks, hours, minutes or seconds, just days.  This is very convenient for programming and reasoning with.
 
-## Usage
-Start work on a task with two tags, `work` and `code`:
+## Installation
+
+I have only tested this installation in Arch Linux, but I don't see why it shouldn't work anywhere.  You will need the Haskell Tool Stack installed.  After cloning this repository, run `stack setup`, then `stack build` in it to compile.  You can then run the Apia commands from within the directory containing the code by preceding them with `stack exec`.  The binary is buried quite deep inside a folder called .stack-work.  The exact path is shown after compiling with `stack build`.  It is convenient to make a soft link to it from one of the directories on your PATH with the command 
+
+```ln -s /path/to/apia/binary /usr/bin```
+
+so that you can use the `apia` command from any directory.
+
+## Usage examples
+
+Sstart work on a task with two tags, `work` and `code`:
 
 ```apia clockin work code```
 
 Switch to a task with tags `job` and `new`:
 
-```apia switch job new``` 
+```apia switch job new```
 
 Stop work:
 
@@ -49,11 +58,3 @@ The day range results include both end days.  If just one day's results is requi
 To get the day number for today:
 
 ```apia now```
-
-## Installation
-
-I have only tested this installation in Arch Linux, but I don't see why it shouldn't work anywhere.  You will need the Haskell Tool Stack installed.  After cloning this repository, run `stack setup`, then `stack build` in it to compile.  You can then run the Apia commands from within the directory containing the code by preceding them with `stack exec`.  The binary is buried quite deep inside a folder called .stack-work.  The exact path is shown after compiling with `stack build`.  It is convenient to make a soft link to it from one of the directories on your PATH with the command 
-
-```ln -s /path/to/apia/binary /usr/bin```
-
-so that you can use the `apia` command from any directory.
