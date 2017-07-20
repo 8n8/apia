@@ -51,36 +51,36 @@ data BadCommand =
     StopNotInt |
     StartIsInTheFuture |
     StopIsInTheFuture |
-    UnhelpfulFail  |
+    UnhelpfulFail String |
     YouNeedAtLeastOneTag deriving Eq
 
 i2f :: Int -> Float
 i2f = fromIntegral
 
-argParse :: Float -> [String] -> Either BadCommand GoodCommand 
-argParse _ ["now"] = Right Now
-argParse _ ["clockedin"] = Right ClockedIn
-argParse _ ["clockin"] = Left YouNeedAtLeastOneTag
-argParse _ ("clockin":tags) 
+argParse :: Float -> [String] -> String -> Either BadCommand GoodCommand 
+argParse _ ["now"] _ = Right Now
+argParse _ ["clockedin"] _ = Right ClockedIn
+argParse _ ["clockin"] _ = Left YouNeedAtLeastOneTag
+argParse _ ("clockin":tags) _
     | null badTags = Right (ClockIn tags)
     | otherwise = Left (NumericTags badTags)
     where badTags = Dl.filter isNum tags
-argParse _ ["clockout"] = Right ClockOut
-argParse now ("daily":start:stop:tags) = 
+argParse _ ["clockout"] _ = Right ClockOut
+argParse now ("daily":start:stop:tags) _ = 
     uncurry3 Daily <$> toCommand now start stop tags
-argParse now ("dailymean":start:stop:tags) =
+argParse now ("dailymean":start:stop:tags) _ =
     uncurry3 DailyMean <$> toCommand now start stop tags
-argParse now ["summary", start, stop] =
+argParse now ["summary", start, stop] _ =
     uncurry Summary <$> lookForBadStartStop now start stop
-argParse _ ("switch":tags) 
+argParse _ ("switch":tags) _ 
     | null badTags = Right (Switch tags)
     | otherwise = Left (NumericTags badTags)
     where badTags = Dl.filter isNum tags
-argParse _ ["today"] = Right Today
-argParse _ ["taglist"] = Right TagList
-argParse now ("total":start:stop:tags) =
+argParse _ ["today"] _ = Right Today
+argParse _ ["taglist"] _ = Right TagList
+argParse now ("total":start:stop:tags) _ =
     uncurry3 Total <$> toCommand now start stop tags
-argParse _ _ = Left UnhelpfulFail 
+argParse _ _ usage = Left (UnhelpfulFail usage)
 
 fst3 :: (a,b,c) -> a
 fst3 (x,_,_) = x
@@ -143,10 +143,10 @@ instance Show BadCommand where
         \be whole numbers."
     show YouNeedAtLeastOneTag = "You need to provide at \
         \least one tag."
-    show UnhelpfulFail = "Apia 1.0.0 (2017-04-16) \n\
+    show (UnhelpfulFail usage) = "Apia 1.0.0 (2017-04-16) \n\
         \Copyright (C) 5-o 2017.  Licensed under \
-        \the GNU General Public License Version 3.\n\
-        \Read the README for usage instructions."
+        \the GNU General Public License Version 3.\n\n\
+        \Usage examples:\n\n" ++ usage
 
 isNum :: String -> Bool
 isNum = Dl.all (`elem` "1234567890.")

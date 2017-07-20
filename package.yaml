@@ -40,3 +40,6 @@ tests:
       - tasty
       - tasty-hunit
       - HUnit-approx
+
+data-files:
+  - usage
