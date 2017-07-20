@@ -36,7 +36,7 @@ Find the average daily work on the tags `work` and `code` between days 101 and 1
 
   apia dailymean 101 102 work code
 
-To get the day number for today:
+Get the day number for today:
 
   apia now
 
