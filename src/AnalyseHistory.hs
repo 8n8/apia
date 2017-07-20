@@ -171,7 +171,7 @@ getTagsForPeriod now start stop =
                     P.Open -> now
                     P.Closed t -> t
         in
-            i2f stop <= P.begin s || 
+            i2f stop + 1 <= P.begin s || 
               i2f start >= sessionEnd
         )
   
