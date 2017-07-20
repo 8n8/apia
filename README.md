@@ -4,11 +4,20 @@ APIA (A Prize is Assured) is a personal work time logger written in Haskell.  It
 
 ## Installation
 
-I have only tested this installation in Arch Linux, but I don't see why it shouldn't work anywhere.  You will need the Haskell Tool Stack installed.  After cloning this repository, run `stack setup`, then `stack build` in it to compile.  You can then run the Apia commands from within the directory containing the code by preceding them with `stack exec`.  The binary is buried quite deep inside a folder called .stack-work.  The exact path is shown after compiling with `stack build`.  It is convenient to make a soft link to it from one of the directories on your PATH with the command 
-
-```ln -s /path/to/apia/binary /usr/bin```
-
-so that you can use the `apia` command from any directory.
+I have only tested this installation in Arch Linux, but I don't see why it shouldn't work anywhere.  You will need the Haskell Tool Stack installed.  After cloning this repository, run `stack setup`, then `stack build` in it to compile.  
+To make the `apia` command available in your terminal make sure you have a directory in your home folder called .local/bin.  If not, make it.  Check this directory is in your PATH variable with the command:
+```env | grep "PATH"```
+My output is:
+```
+MOZ_PLUGIN_PATH=/usr/lib/mozilla/plugins
+PATH=/home/t/.local/bin:/home/t/.cargo/bin:/usr/local/sbin:/usr/local/bin:/usr/bin:/usr/bin/site_perl:/usr/bin/vendor_perl:/usr/bin/core_perl
+WINDOWPATH=1
+```
+You can see that there is a directory called .local/bin in my home directory in the list of directories in the PATH variable.  If yours isn't there open up your .bashrc file in your home directory and add 
+```
+export PATH=$HOME/.local/bin:$PATH
+```
+somewhere in it.  Run `source ~/.bashrc` to reread the config file.   From within the `apia` directory run `stack install` which will put the binary in the ~/.local/bin directory and make the `apia` command available.
 
 ## Usage examples
 
