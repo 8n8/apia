@@ -7,12 +7,10 @@ APIA (A Prize is Assured) is a personal work time logger written in Haskell.  It
 I have only tested this installation in Arch Linux, but I don't see why it shouldn't work anywhere.  First [install the Haskell Tool Stack](https://docs.haskellstack.org/en/stable/install_and_upgrade/).  Then clone this repository and run `stack setup` then `stack build` in it to compile.  
 
 To make the `apia` command available in the terminal make sure there is a directory in the home folder called .local/bin.  Make it if it does not exist.  Check this directory is in the PATH variable with the command:
-```env | grep "PATH"```
+```echo $PATH```
 My output is:
 ```
-MOZ_PLUGIN_PATH=/usr/lib/mozilla/plugins
-PATH=/home/t/.local/bin:/home/t/.cargo/bin:/usr/local/sbin:/usr/local/bin:/usr/bin:/usr/bin/site_perl:/usr/bin/vendor_perl:/usr/bin/core_perl
-WINDOWPATH=1
+/home/t/.local/bin:/home/t/.cargo/bin:/usr/local/sbin:/usr/local/bin:/usr/bin:/usr/bin/site_perl:/usr/bin/vendor_perl:/usr/bin/core_perl
 ```
 You can see that there is a directory called .local/bin in my home directory in the list of directories in the PATH variable.  If it isn't there in yours add
 ```
