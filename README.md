@@ -4,9 +4,9 @@ APIA (A Prize is Assured) is a personal work time logger written in Haskell.  It
 
 ## Installation
 
-I have only tested this installation in Arch Linux, but I don't see why it shouldn't work anywhere.  First [install the Haskell Tool Stack](https://docs.haskellstack.org/en/stable/install_and_upgrade/).  After cloning this repository, run `stack setup`, then `stack build` in it to compile.  
+I have only tested this installation in Arch Linux, but I don't see why it shouldn't work anywhere.  First [install the Haskell Tool Stack](https://docs.haskellstack.org/en/stable/install_and_upgrade/).  Then clone this repository and run `stack setup` then `stack build` in it to compile.  
 
-To make the `apia` command available in the terminal make sure there is a directory in the home folder called .local/bin.  Make it if it isn't there.  Check this directory is in the PATH variable with the command:
+To make the `apia` command available in the terminal make sure there is a directory in the home folder called .local/bin.  Make it if it does not exist.  Check this directory is in the PATH variable with the command:
 ```env | grep "PATH"```
 My output is:
 ```
@@ -14,11 +14,11 @@ MOZ_PLUGIN_PATH=/usr/lib/mozilla/plugins
 PATH=/home/t/.local/bin:/home/t/.cargo/bin:/usr/local/sbin:/usr/local/bin:/usr/bin:/usr/bin/site_perl:/usr/bin/vendor_perl:/usr/bin/core_perl
 WINDOWPATH=1
 ```
-You can see that there is a directory called .local/bin in my home directory in the list of directories in the PATH variable.  If it isn't there add
+You can see that there is a directory called .local/bin in my home directory in the list of directories in the PATH variable.  If it isn't there in yours add
 ```
 export PATH=$HOME/.local/bin:$PATH
 ```
-to the file .bashrc in the home directory.  Run `source ~/.bashrc` to reread the config file.   From within the `apia` directory run `stack install` which will put the binary in the ~/.local/bin directory and make the `apia` command available.
+to the file .bashrc in the home directory.  Run `source ~/.bashrc` to reread the .bashrc file.   From within the `apia` directory run `stack install` which will put the binary in the ~/.local/bin directory and make the `apia` command available.
 
 ## Usage examples
 
