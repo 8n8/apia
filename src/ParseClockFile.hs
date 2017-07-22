@@ -34,9 +34,8 @@ module ParseClockFile
     , parseClockFile
     ) where
 
-
-import qualified Data.Either as De
-import qualified Data.List as Dl
+import qualified Data.Either as E 
+import qualified Data.List as L
 
 data Session = Session 
     { taglist :: [String]
@@ -87,7 +86,7 @@ data BadLine = BadLine
 newtype BadLines = BadLines [BadLine] deriving Eq
 
 instance Show BadLines where
-    show (BadLines xs) = Dl.intercalate "\n" (map show xs)
+    show (BadLines xs) = L.intercalate "\n" (map show xs)
 
 instance Show BadLine where
     show (BadLine err linenum) =
@@ -114,13 +113,14 @@ instance Show BadLineType where
         \contains numbers.  It should contain at least one \
         \character that is not a number or a decimal point."
 
-parseClockFile 
-    :: Float -> String
-    -> Either InternalParseError (Either BadLines Clocks)
+parseClockFile ::
+    Float ->
+    String ->
+    Either InternalParseError (Either BadLines Clocks)
 parseClockFile _ "" = Right (Right (Clocks [] Empty))
 parseClockFile now f = (\eitherClocks ->
     case sequence eitherClocks of
-        Left _ -> Left (BadLines (De.lefts eitherClocks))
+        Left _ -> Left (BadLines (E.lefts eitherClocks))
         Right s -> Right Clocks 
             { sessions = s
             , clockstate = 
@@ -133,9 +133,10 @@ isClosed :: ClockEnd -> Bool
 isClosed (Closed _) = True
 isClosed _ = False
 
-file2sess 
-    :: Float -> String
-    -> Either InternalParseError [Either BadLine Session]
+file2sess ::
+    Float ->
+    String ->
+    Either InternalParseError [Either BadLine Session]
 file2sess now f = 
     sequence [ line2sess n ofN now line | 
                (n,line) <- zip [1..] lns ]
@@ -147,9 +148,12 @@ file2sess now f =
 -- BadLine if it is wrong.  The first argument is the line
 -- number and the second is the total number of lines in
 -- the file.
-line2sess 
-    :: Int -> Int -> Float -> [String]
-    -> Either InternalParseError (Either BadLine Session)
+line2sess ::
+    Int ->
+    Int ->
+    Float ->
+    [String] ->
+    Either InternalParseError (Either BadLine Session)
 line2sess n _ _ [] =
     Right (Left BadLine { errType = EmptyLine, lineNum = n })
 line2sess n _ _ [_] = 
@@ -165,8 +169,8 @@ line2sess n ofN now line =
                 Nothing -> Right (Right Session
                     { taglist = 
                         if clockClosed
-                        then Dl.sort . Dl.nub . init . init $ line
-                        else Dl.sort . Dl.nub . init $ line
+                        then L.sort . L.nub . init . init $ line
+                        else L.sort . L.nub . init $ line
                     , begin = start
                     , end = stop })
   where 
@@ -185,14 +189,16 @@ data InternalParseError =
 
 -- It takes in a line and works out what is wrong with it,
 -- if anything.
-lookForBadWords :: [String] -> 
+lookForBadWords ::
+    [String] -> 
     Either InternalParseError (Maybe BadLineType)
 lookForBadWords [] = Left LookForBadWordsGivenEmptyList 
 lookForBadWords s = parseBackwards . reverse $ wordTypes
   where 
     wordTypes = map (\x -> if isNum x then Clock else Tag) s
 
-parseBackwards :: [WordType] -> 
+parseBackwards :: 
+    [WordType] -> 
     Either InternalParseError (Maybe BadLineType)
 parseBackwards [] = Left ParseBackwardsGivenEmptyList 
 parseBackwards [_] = Left ParseBackwardsGivenOneItemList
@@ -207,8 +213,8 @@ parseBackwards (Clock:Clock:xs)
     | otherwise = Right (Just AtLeastOneNumericTag)
 
 -- It does some checks on the clocks in a session.
-lookForBadClock :: Float -> ClockEnd -> Int -> Int 
-                -> Float -> Maybe BadLineType
+lookForBadClock ::
+    Float -> ClockEnd -> Int -> Int -> Float -> Maybe BadLineType
 lookForBadClock start Open n ofN now 
     | start > now = Just BeginTimeIsInTheFuture
     | n /= ofN = Just OpenClockNotOnLastLine
@@ -222,4 +228,4 @@ s2f :: String -> Float
 s2f x = read x :: Float
 
 isNum :: String -> Bool
-isNum = Dl.all (`elem` "1234567890.")
+isNum = L.all (`elem` "1234567890.")
