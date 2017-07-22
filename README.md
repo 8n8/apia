@@ -21,9 +21,13 @@ to the file .bashrc in the home directory.  Run `source ~/.bashrc` to reread the
 ## Clock file format
 
 The data file format follows these rules:
+
 + each work session is on a separate line
+
 + each line contains a list of tags separated by spaces, followed by the start and end times
+
 + a tag can be any sequence of non-space characters, but must contain at least one character that is not 0-9 or . (full stop)
+
 + only the session on the last line in the file is allowed to not have an end time, if the session has not ended yet
 
 ## Usage examples
