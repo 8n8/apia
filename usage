@@ -22,7 +22,7 @@ Make a chart showing a breakdown of the work done today:
 
 Make a summary of the work done between day 100 and day 120:
 
-  apia summary 100 200
+  apia summary 100 120
 
 Show the amount of work done each day on the tags `work` and `code` between day 100 and day 120:
 
@@ -36,7 +36,7 @@ Find the average daily work on the tags `work` and `code` between days 101 and 1
 
   apia dailymean 101 102 work code
 
-Get the day number for today:
+Get the current time:
 
   apia now
 

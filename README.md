@@ -4,9 +4,9 @@ APIA (A Prize is Assured) is a personal work time logger written in Haskell.  It
 
 ## Installation
 
-I have only tested this installation in Arch Linux, but I don't see why it shouldn't work anywhere.  First [install the Haskell Tool Stack](https://docs.haskellstack.org/en/stable/install_and_upgrade/).  Then clone this repository and run `stack setup` then `stack build` in it to compile.  
+I have only tested this installation in Ubuntu and Arch Linux, but I don't see why it shouldn't work anywhere.  First [install the Haskell Tool Stack](https://docs.haskellstack.org/en/stable/install_and_upgrade/).  Then clone this repository and run `stack setup` then `stack build` in it to compile.  
 
-To make the `apia` command available in the terminal make sure there is a directory in the home folder called .local/bin.  Make it if it does not exist.  Check this directory is in the PATH variable with the command:
+To make the `apia` command available in the terminal make sure there is a directory in the home directory called .local/bin.  Make it if it does not exist.  Check this directory is in the PATH variable with the command:
 ```echo $PATH```
 My output is:
 ```
@@ -44,7 +44,7 @@ Make a chart showing a breakdown of the work done today:
 
 Make a summary of the work done between day 100 and day 120:
 
-```apia summary 100 200```
+```apia summary 100 120```
 
 Show the amount of work done each day on the tags `work` and `code` between day 100 and day 120:
 
@@ -58,7 +58,7 @@ Find the average daily work on the tags `work` and `code` between days 101 and 1
 
 ```apia dailymean 101 102 work code```
 
-Get the day number for today:
+Get the current time:
 
 ```apia now```
 

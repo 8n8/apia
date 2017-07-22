@@ -4,9 +4,9 @@ APIA (A Prize is Assured) is a personal work time logger written in Haskell.  It
 
 ## Installation
 
-I have only tested this installation in Arch Linux, but I don't see why it shouldn't work anywhere.  First [install the Haskell Tool Stack](https://docs.haskellstack.org/en/stable/install_and_upgrade/).  Then clone this repository and run `stack setup` then `stack build` in it to compile.  
+I have only tested this installation in Ubuntu and Arch Linux, but I don't see why it shouldn't work anywhere.  First [install the Haskell Tool Stack](https://docs.haskellstack.org/en/stable/install_and_upgrade/).  Then clone this repository and run `stack setup` then `stack build` in it to compile.  
 
-To make the `apia` command available in the terminal make sure there is a directory in the home folder called .local/bin.  Make it if it does not exist.  Check this directory is in the PATH variable with the command:
+To make the `apia` command available in the terminal make sure there is a directory in the home directory called .local/bin.  Make it if it does not exist.  Check this directory is in the PATH variable with the command:
 ```echo $PATH```
 My output is:
 ```
