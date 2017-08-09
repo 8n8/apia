@@ -51,9 +51,9 @@ instance Show Do2File where
         ' ':show now ++ "\n" ++ clockLn tags now
 
 -- This does everything.  It takes in the current time,
--- the list of input arguments, and the file contents, and
--- gives a record containing a message to print out and 
--- a string to append to the clock file.
+-- the list of input arguments, the data file contents and 
+-- the usage file contents, and gives a record containing a
+-- message to print out and a string to append to the clock file.
 chooseActions :: Float -> [String] -> String -> String -> Actions
 chooseActions now args fileContents usage = 
     -- The fileData variable is a nested Either expression.
@@ -85,7 +85,11 @@ clockLn tags now = unwords tags ++ ' ':show now
 -- It chooses what action to take depending on the
 -- input arguments.  It does not deal with errors.  These
 -- should have been sorted beforehand.
-switcher :: Float -> P.Clocks -> G.GoodCommand -> Actions
+switcher ::
+    Float ->  -- The current time.
+    P.Clocks ->  -- The parsed data file.
+    G.GoodCommand ->  -- The parsed command-line arguments.
+    Actions
 switcher _ (P.Clocks _ state) G.ClockedIn = Actions 
     { msg = Just (T.HereIsTheClockState state)
     , toFile = Nothing }

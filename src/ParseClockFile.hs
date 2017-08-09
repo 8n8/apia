@@ -67,7 +67,7 @@ instance Show ClockFileState where
 
 startString :: String
 startString = 
-    "The clock at the end of the file is open. It's tag"
+    "The clock at the end of the file is open. Its tag"
 
 data BadLineType = 
     BeginTimeIsInTheFuture  |
@@ -175,10 +175,11 @@ line2sess n ofN now line =
                     , end = stop })
   where 
     clockClosed = isNum . last . init $ line
-    (start, stop) = if clockClosed 
-                    then ( s2f . last . init $ line
-                         , Closed (s2f $ last line) )
-                    else ( s2f $ last line, Open )
+    (start, stop) =
+        if clockClosed 
+        then ( s2f . last . init $ line
+            , Closed (s2f $ last line) )
+        else ( s2f $ last line, Open )
             
 data WordType = Tag | Clock deriving Eq
 
