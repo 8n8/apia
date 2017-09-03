@@ -1,14 +1,14 @@
 set -o errexit
 set -o nounset
 
-itWentWrong {
+itWentWrong() {
     echo $1
     exit
 }
 
 hash git 2>/dev/null || itWentWrong "Git is not installed."
 
-installStack {
+installStack() {
     wget -qO- https://get.haskellstack.org/ | sh
 }
 
@@ -17,7 +17,10 @@ hash stack 2>/dev/null || installStack
 hash stack 2>/dev/null || itWentWrong "Stack is not installed."
 
 readonly repoUrl="bitbucket.org/5-o/apia"
-nc -zw1 "$repoUrl" 443 2>/dev/null || echo "$repoUrl cannot be reached.  Is there an internet connection?"; exit
+if ! nc -zw1 "$repoUrl" 443; then
+    echo "$repoUrl cannot be reached.  Is there an internet connection?"; exit
+    exit
+fi
 
 ! [ -e $HOME/.local/bin/apia ] || itWentWrong "Apia is already installed."
 cd /tmp
