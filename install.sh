@@ -1,7 +1,7 @@
 set -o errexit
 set -o nounset
 
-function itWentWrong {
+itWentWrong() {
     echo $1
     exit
 }
