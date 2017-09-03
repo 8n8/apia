@@ -7,9 +7,12 @@ itWentWrong {
 }
 
 hash git 2>/dev/null || itWentWrong "Git is not installed."
-if hash stack 2>/dev/null != 0; then
+
+installStack {
     wget -qO- https://get.haskellstack.org/ | sh
-fi
+}
+
+hash stack 2>/dev/null || installStack
 
 hash stack 2>/dev/null || itWentWrong "Stack is not installed."
 
