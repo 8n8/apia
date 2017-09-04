@@ -4,13 +4,15 @@ APIA (A Prize is Assured) is a personal work time logger written in Haskell.  It
 
 ## Installation
 
-You should have git and wget installed.  Then run this command to download and run the installation script:
+If you are used to using Git and the Haskell Tool Stack then you can just clone the repo, then do stack setup, stack build and stack install etc.
+
+If not: You should have git and wget installed.  Then run this command to download and run the installation script:
 
 ```sh -c "$(wget https://bitbucket.org/5-o/apia/raw/master/install.sh -O -)"```
 
-This takes ages (~ 15 mins) on a clean Ubuntu install as it has to download and install all the Haskell stuff and compile everything.
+This takes ages (~ 20 mins) on a clean Ubuntu install as it has to download and install all the Haskell stuff and compile everything.
 
-To uninstall this program, delete the file ~/.local/bin/apia.  To uninstall all the Haskell stuff, delete the directory ~/.stack
+To uninstall this program, delete the file $HOME/.local/bin/apia.  To uninstall all the Haskell stuff, delete the directory $HOME/.stack
 
 ## Clock file format
 
