@@ -4,6 +4,8 @@ APIA (A Prize is Assured) is a personal work time logger written in Haskell.  It
 
 ## Installation
 
+The installation has been tested in Ubuntu 16.04 and Fedora 26.
+
 If you are used to using Git and the Haskell Tool Stack then you can just clone the repo, then do stack setup, stack build and stack install etc.
 
 If not: You should have git and wget installed.  Then run this command to download and run the installation script:
