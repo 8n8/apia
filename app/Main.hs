@@ -30,7 +30,6 @@ import qualified Data.Time as Dt
 import qualified DecimalTime as T
 import qualified System.Directory as Sd
 import qualified System.Environment as SEnv
-import qualified Paths_apia as P
 
 -- It makes the clock file if it is not there, reads
 -- the current time, reads the input arguments, reads
@@ -40,12 +39,10 @@ main =
     (++ "/.apia") <$> Sd.getHomeDirectory >>= \clockfile ->
     (Sd.doesFileExist clockfile >>= \x ->
      Cm.unless x $ writeFile clockfile "") >>
-    P.getDataFileName "usage" >>= \usageFilePath ->
-    readFile usageFilePath >>= \usage ->
     T.utc2dt <$> Dt.getCurrentTime >>= \now ->
     SEnv.getArgs >>= \args ->
     readFile clockfile >>= \f ->
-    case C.chooseActions now args f usage of
+    case C.chooseActions now args f of
         C.Actions Nothing Nothing ->
             print pathetic
         C.Actions (Just msg) Nothing ->

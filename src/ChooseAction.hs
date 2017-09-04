@@ -54,8 +54,8 @@ instance Show Do2File where
 -- the list of input arguments, the data file contents and 
 -- the usage file contents, and gives a record containing a
 -- message to print out and a string to append to the clock file.
-chooseActions :: Float -> [String] -> String -> String -> Actions
-chooseActions now args fileContents usage = 
+chooseActions :: Float -> [String] -> String -> Actions
+chooseActions now args fileContents = 
     -- The fileData variable is a nested Either expression.
     -- The outer layer contains internal errors, such as 
     -- unlikely pattern matches, and the inner layer contains
@@ -75,7 +75,7 @@ chooseActions now args fileContents usage =
     fileData :: Either P.InternalParseError 
                   (Either P.BadLines P.Clocks)
     fileData = P.parseClockFile now fileContents
-    parsedArgs = G.argParse now args usage
+    parsedArgs = G.argParse now args
 
 -- It makes the line to write to the clock file when
 -- clocking in.

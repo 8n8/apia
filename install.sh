@@ -8,7 +8,7 @@ itWentWrong() {
 
 hash git 2>/dev/null || itWentWrong "Git is not installed."
 
-readonly repoUrl="bitbucket.org/5-o/apia"
+readonly repoUrl="https://bitbucket.org/5-o/apia.git"
 ! nc -zw1 "$repoUrl" 443 2>/dev/null || itWentWrong "Can't connect to $repoUrl"
 
 installStack() {
@@ -21,7 +21,7 @@ hash stack 2>/dev/null || itWentWrong "Stack is not installed."
 
 
 ! [ -e $HOME/.local/bin/apia ] || itWentWrong "Apia is already installed."
-cd /tmp
+cd $HOME
 trap "rm -rf /tmp/apia; exit" INT TERM EXIT
 git clone "$repoUrl" || itWentWrong "The clone command failed."
 cd apia
