@@ -8,6 +8,10 @@ You should have git and wget installed.  Then run this command to download and r
 
 ```sh -c "$(wget https://bitbucket.org/5-o/apia/raw/master/install.sh -O -)"```
 
+This takes ages (~ 15 mins) on a clean Ubuntu install as it has to download and install all the Haskell stuff and compile everything.
+
+To uninstall this program, delete the file ~/.local/bin/apia.  To uninstall all the Haskell stuff, delete the directory ~/.stack
+
 ## Clock file format
 
 The data file format follows these rules:
