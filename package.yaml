@@ -8,10 +8,7 @@ ghc-options: -Wall -O2
 
 dependencies:
   - base >= 4.7 && < 5
-  - containers
   - directory
-  - text
-  - text-show
   - time
 
 library:
@@ -39,4 +36,3 @@ tests:
     dependencies:
       - tasty
       - tasty-hunit
-      - HUnit-approx
