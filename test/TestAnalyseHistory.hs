@@ -131,7 +131,10 @@ dailyDurations = TT.testGroup "Daily durations"
             , P.Session ["asdf"] 279.5 (P.Closed 279.8)]
                 P.AllClocksClosed
 
-eqTupLists :: [(Int, Float)] -> [(Int, Float)] -> Bool
+eqTupLists 
+    :: [(Int, Float)] 
+    -> [(Int, Float)] 
+    -> Bool
 eqTupLists a b 
     | length a /= length b = False
     | null a, null b = True
