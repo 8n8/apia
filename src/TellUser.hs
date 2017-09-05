@@ -34,19 +34,12 @@ import qualified ParseClockFile as P
 
 data TellUser =
     HereIsTheClockState P.ClockFileState |
-    HereIsYourDailyChart
-        (Either H.InternalError [(Int,Float)]) |
-    HereIsYourDailyMean
-        (Either H.InternalError Int) |
-    HereIsYourSummary
-        (Either H.InternalError [(String,Int)])
-        P.ClockFileState |
+    HereIsYourDailyChart [(Int,Float)] |
+    HereIsYourDailyMean Int |
+    HereIsYourSummary [(String,Int)] P.ClockFileState |
     HereIsYourTagList [String] |
-    HereIsYourTodayChart 
-        (Either H.InternalError [(String,Int)]) 
-        P.ClockFileState |
-    HereIsYourTotal 
-        (Either H.InternalError Float) |
+    HereIsYourTodayChart [(String,Int)] P.ClockFileState |
+    HereIsYourTotal Float |
     TheClockFileIsBad P.BadLines |
     TheClockFileIsEmpty |
     YouAreAlreadyClockedIn [String] |
@@ -63,22 +56,15 @@ i2f = fromIntegral
 
 instance Show TellUser where
     show (HereIsTheClockState x) = show x
-    show (HereIsYourDailyChart (Left err)) = show err
-    show (HereIsYourDailyChart (Right table)) =
+    show (HereIsYourDailyChart table) =
         L.intercalate "\n" $ map makeBarForGraphic table
-    show (HereIsYourDailyMean (Left err)) = show err
-    show (HereIsYourDailyMean (Right mean)) = show mean
+    show (HereIsYourDailyMean mean) = show mean
     show (HereIsYourTagList tags) = L.intercalate "\n" tags
-    show (HereIsYourTodayChart (Left err) cfs) = 
-        show err ++ "\n" ++ show cfs
-    show (HereIsYourTodayChart (Right table) cfs) =
+    show (HereIsYourTodayChart table cfs) =
         L.intercalate "\n" $ printSummaryChart cfs table
-    show (HereIsYourSummary (Left err) cfs) =
-        show err ++ "\n" ++ show cfs
-    show (HereIsYourSummary (Right table) cfs) =
+    show (HereIsYourSummary table cfs) =
         L.intercalate "\n" $ printSummaryChart cfs table
-    show (HereIsYourTotal (Left err)) = show err
-    show (HereIsYourTotal (Right total)) = 
+    show (HereIsYourTotal total) = 
         take 7 (show total) ++ " days"
     show TheClockFileIsEmpty = "The clock file is empty."
     show (TheClockFileIsBad msg) = show msg

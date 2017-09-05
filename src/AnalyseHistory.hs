@@ -23,6 +23,7 @@
 -- This module provides functions for extracting useful
 -- data from the history of clocked sessions.
 
+
 module AnalyseHistory 
     ( dailyDurations
     , newtags
@@ -30,7 +31,6 @@ module AnalyseHistory
     , getTagsForPeriod
     , summary
     , daymean
-    , InternalError(..)
     ) where
 
 import qualified ParseClockFile as P
@@ -42,64 +42,64 @@ import qualified Data.List as L
 -- on that day in the second element.
 dailyDurations 
     :: P.Clocks -> Int -> Int -> [String] -> Float
-    -> Either InternalError [(Int, Float)]
-dailyDurations f start stop tags now = 
-    mapM oneday [start..stop]
+    -> [(Int, Float)]
+dailyDurations f start stop tags now =
+    map oneday [start..stop]
   where
-    oneday :: Int -> Either InternalError (Int, Float)
-    oneday x = (\a -> (x, a)) <$> daySum x
+    oneday :: Int -> (Int, Float)
+    oneday x = (\a -> (x, a)) $ daySum x
     -- It finds all the sessions whose tags include all 
     -- those given by the user.
     filtered :: [P.Session]
-    filtered = filter (all1in2 tags . P.taglist) $ 
-        P.sessions f
+    filtered = filter (all1in2 tags . P.taglist) $ P.sessions f
     -- It works out how much work done on a given day.
-    daySum :: Int -> Either InternalError Float
-    daySum day = sum <$> mapM (eachDay day now) filtered
+    daySum :: Int -> Float
+    daySum day = sum $ map (eachDay day now) filtered
 
 -- It checks that all the elements in the first list
 -- are also in the second list.
 all1in2 :: [String] -> [String] -> Bool
 all1in2 one two = L.all (`elem` two) one
 
-data InternalError =
-    EachDayBadPatternMatchOpen |
-    EachDayBadPatternMatchClosed
-    deriving (Eq, Ord, Show)
-
-total :: [P.Session] -> Float -> Int -> Int -> Either InternalError Float
+total ::
+    [P.Session] ->
+    Float ->
+    Int ->
+    Int ->
+    Float
 total s now start stop =
-    sum <$> mapM sesstot s 
+    sum $ map sesstot s 
   where  
-    sesstot :: P.Session -> Either InternalError Float
-    sesstot sess = sum <$> mapM (\d -> eachDay d now sess) [start..stop]
+    sesstot :: P.Session -> Float
+    sesstot sess = sum $ map (\d -> eachDay d now sess) [start..stop]
 
 -- It takes in a day number and a session and gives the
 -- amount of the session's time that was on that day.
-eachDay :: Int -> Float -> P.Session 
-        -> Either InternalError Float
+eachDay ::
+    Int ->
+    Float ->
+    P.Session ->
+    Float
 eachDay day now (P.Session _ begin P.Open)
-    | begin `before` day = Right (
+    | begin `before` day =
         if now > (i2f day + 1)
         then 1
-        else now - i2f day )
-    | begin `during` day = Right (
+        else now - i2f day
+    | begin `during` day =
         if now > (i2f day + 1)
         then i2f day + 1 - begin
-        else now - begin )
-    | begin `after` day = Right 0
-    | otherwise = Left EachDayBadPatternMatchOpen
+        else now - begin
+    | begin `after` day = 0
 eachDay day _ (P.Session _ begin (P.Closed end))
-    | begin `after` day = Right 0
-    | end `before` day = Right 0
-    | begin `before` day, end `during` day = 
-          Right (end - i2f day)
-    | begin `before` day, end `after` day = Right 1
-    | begin `during` day, end `during` day = 
-          Right (end - begin)
-    | begin `during` day, end `after` day =
-          Right (i2f day + 1 - begin)
-    | otherwise = Left EachDayBadPatternMatchClosed
+    | begin `after` day = 0
+    | end `before` day = 0
+    | begin `before` day, end `during` day = end - i2f day
+    | begin `before` day, end `after` day = 1
+    | begin `during` day, end `during` day = end - begin
+    | begin `during` day, end `after` day = i2f day + 1 - begin
+eachDay _ _ _ =
+    error "Internal error: incomplete pattern match on 'eachDay'\
+        \function in AnalyseHistory.hs." 
     
 before, during, after :: Float -> Int -> Bool
 before x day = x < i2f day
@@ -114,32 +114,38 @@ i2f = fromIntegral
 -- a list of tuples, each tuple containing a unique tag in its
 -- first element, and the total work done on it in milliDays in 
 -- its second element.
-summary 
-    :: P.Clocks -> Float -> Int -> Int 
-    -> Either InternalError [(String,Int)]
-summary f now start stop = (++) <$> breakdown <*> totaltime
+summary ::
+    P.Clocks ->
+    Float ->
+    Int ->
+    Int ->
+    [(String,Int)]
+summary f now start stop = breakdown ++ totaltime
   where
     breakdown = totalOnEachTag f now start stop
-    totaltime :: Either InternalError [(String, Int)]
-    totaltime = (\a -> [("total", a)]) <$> tot
-    tot :: Either InternalError Int
-    tot = (truncate . (1000*)) <$> total (P.sessions f) now start stop
+    totaltime :: [(String, Int)]
+    totaltime = (\a -> [("total", a)]) tot
+    tot :: Int
+    tot = (truncate . (1000*)) $ total (P.sessions f) now start stop
 
 -- It works out the total time spent on each tag in the given time period.
-totalOnEachTag
-    :: P.Clocks -> Float -> Int -> Int
-    -> Either InternalError [(String,Int)]
+totalOnEachTag ::
+    P.Clocks ->
+    Float ->
+    Int ->
+    Int ->
+    [(String,Int)]
 totalOnEachTag f now start stop =
-    mapM onetag tags 
+    map onetag tags 
   where
     -- The total spent on one tag.
-    onetag :: String -> Either InternalError (String, Int)
-    onetag tag = (\a -> (tag, a)) <$> tagsum tag
+    onetag :: String -> (String, Int)
+    onetag tag = (\a -> (tag, a)) $ tagsum tag
     tags :: [String]
     tags = getTagsForPeriod now start stop (P.sessions f)
-    tagsum :: String -> Either InternalError Int
+    tagsum :: String -> Int
     tagsum tag = 
-        (truncate . (1000*) . sum . map snd) <$>
+        truncate . (1000*) . sum . map snd $
             dailyDurations f start stop [tag] now
 
 -- It finds all the tags in the clock file that are attached
@@ -177,15 +183,20 @@ getTagsForPeriod now start stop =
   
 -- It finds the mean daily time for the tags in
 -- the arguments.
-daymean :: P.Clocks -> Int -> Int -> [String] -> Float
-        -> Either InternalError Float
+daymean ::
+    P.Clocks ->
+    Int ->
+    Int ->
+    [String] ->
+    Float ->
+    Float
 daymean f start stop tags now = 
-    (/ period) <$> (sum <$> byday) 
+    (sum byday) / period
   where
     -- It is a list of the daily totals of work matching
     -- the tags.
-    byday :: Either InternalError [Float]
-    byday = map snd <$> dailyDurations f start stop tags now
+    byday :: [Float]
+    byday = map snd $ dailyDurations f start stop tags now
     -- It is the period of time the mean is taken over.
     -- The +1 is so that it counts both ends of the 
     -- period.

@@ -18,9 +18,9 @@ tests =
 daymean :: TT.TestTree
 daymean = TT.testGroup "daymean"
     [ HU.testCase "empty" $
-        A.daymean (P.Clocks [] P.Empty) 0 0 [] 0 HU.@?= Right 0
+        A.daymean (P.Clocks [] P.Empty) 0 0 [] 0 HU.@?= 0
     , HU.testCase "simple" $
-        A.daymean clcks 5 10 tags 11.2 HU.@?= Right 0.9666667 ]
+        A.daymean clcks 5 10 tags 11.2 HU.@?= 0.9666667 ]
   where
     tags = ["a", "b"]
     clcks = P.Clocks
@@ -31,13 +31,13 @@ daymean = TT.testGroup "daymean"
 summary :: TT.TestTree
 summary = TT.testGroup "summary"
     [ HU.testCase "empty" $
-        summary1 HU.@?= Right [("total", 0)]
+        summary1 HU.@?= [("total", 0)]
     , HU.testCase "simple" $
-        summary2 HU.@?= Right sums 
+        summary2 HU.@?= sums 
     , HU.testCase "old bug" $
-        summary3 HU.@?= Right sums3
+        summary3 HU.@?= sums3
     , HU.testCase "new bug" $
-        summary4 HU.@?= Right sums4 ]
+        summary4 HU.@?= sums4 ]
   where
     summary4 = 
         A.summary (P.Clocks sess4 (P.LastClockOpen ["a"])) 3.4 3 3
@@ -115,11 +115,11 @@ dailyDurations = TT.testGroup "Daily durations"
         eqTupLists 
             actual moreoutput HU.@?= True ]
   where
-    output = Right [(0,0)] 
+    output = [(0,0)] 
     minhist = 
         P.Clocks [ P.Session ["a"] 0 (P.Closed 0) ] 
             P.AllClocksClosed
-    moreoutput = Right 
+    moreoutput =
         [ (276, 0), (277, 0.1), (278, 0), (279, 0.3) ]
     actual = A.dailyDurations morehist 276 279 moretags 279.9
     moretags = ["asdf"]
@@ -132,15 +132,10 @@ dailyDurations = TT.testGroup "Daily durations"
                 P.AllClocksClosed
 
 eqTupLists 
-    :: Either A.InternalError [(Int, Float)] 
-    -> Either A.InternalError [(Int, Float)] 
+    :: [(Int, Float)] 
+    -> [(Int, Float)] 
     -> Bool
-eqTupLists (Left a) (Left b)
-    | a /= b = False
-    | otherwise = True
-eqTupLists (Left _) (Right _) = False
-eqTupLists (Right _) (Left _) = False
-eqTupLists (Right a) (Right b)
+eqTupLists a b 
     | length a /= length b = False
     | null a, null b = True
     | L.all comparetups (zip a b) = True

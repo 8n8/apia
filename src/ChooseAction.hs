@@ -132,7 +132,7 @@ switcher _ (P.Clocks _ P.Empty) G.DailyMean{} = Actions
     , toFile = Nothing }
 switcher t f (G.DailyMean start stop tags) = Actions 
     { msg = Just (T.HereIsYourDailyMean (
-        (truncate . (1000 *)) <$> 
+        (truncate . (1000 *)) $ 
             A.daymean f start stop tags t))
     , toFile = Nothing }
 switcher _ (P.Clocks _ P.Empty) (G.Switch _) = Actions
@@ -166,7 +166,7 @@ switcher _ (P.Clocks s _) G.TagList = Actions
     { msg = Just (T.HereIsYourTagList (A.getTagList s))
     , toFile = Nothing }
 switcher t f (G.Total start stop tags) = Actions 
-    { msg = Just (T.HereIsYourTotal ((sum . map snd) <$> 
+    { msg = Just (T.HereIsYourTotal ((sum . map snd) $ 
          A.dailyDurations f start stop tags t))
     , toFile = Nothing }
 switcher t _ G.Now = Actions
