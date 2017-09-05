@@ -1,6 +1,6 @@
 # APIA
 ## Description
-APIA (A Prize is Assured) is a personal work time logger written in Haskell.  It has a command-line interface.  The data is kept in a plain text file at ~/.apia. 
+Apia is a personal work time logger written in Haskell.  It has a command-line interface.  The data is kept in a plain text file at ~/.apia. 
 
 ## Installation
 
