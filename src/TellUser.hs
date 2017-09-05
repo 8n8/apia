@@ -27,7 +27,6 @@ module TellUser
     ( TellUser (..)
     ) where
 
-import qualified AnalyseHistory as H
 import qualified ArgParse as A
 import qualified Data.List as L
 import qualified ParseClockFile as P

@@ -23,7 +23,6 @@
 -- This module provides functions for extracting useful
 -- data from the history of clocked sessions.
 
-
 module AnalyseHistory 
     ( dailyDurations
     , newtags
@@ -40,8 +39,7 @@ import qualified Data.List as L
 -- matches the input tags.  The tuples in the output contain
 -- the day number in the first element and the work done
 -- on that day in the second element.
-dailyDurations 
-    :: P.Clocks -> Int -> Int -> [String] -> Float
+dailyDurations :: P.Clocks -> Int -> Int -> [String] -> Float
     -> [(Int, Float)]
 dailyDurations f start stop tags now =
     map oneday [start..stop]
