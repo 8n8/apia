@@ -55,7 +55,6 @@ data TellUser =
     YouCantSwitchToYourCurrentTask |
     YouGaveBadArgs A.BadCommand |
     YouHaveMadeNewTags [String] |
-    FileParseErr P.InternalParseError |
     TheTimeIs Float
         deriving Eq
 
@@ -96,7 +95,6 @@ instance Show TellUser where
         \already clocked in and working on that task."
     show (YouGaveBadArgs msg) = show msg
     show (YouHaveMadeNewTags tags) = newTagMsg tags
-    show (FileParseErr err) = show err
     show (TheTimeIs t) = show t
 
 -- It makes the chart that shows how the time has been

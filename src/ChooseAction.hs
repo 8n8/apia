@@ -64,16 +64,12 @@ chooseActions now args fileContents =
         (_, Left a) -> Actions 
             { msg = Just (T.YouGaveBadArgs a)
             , toFile = Nothing } 
-        (Right (Left f), _) -> Actions 
+        (Left f, _) -> Actions 
             { msg = Just (T.TheClockFileIsBad f)
             , toFile = Nothing }
-        (Left intErr, _) -> Actions 
-            { msg = Just (T.FileParseErr intErr)
-            , toFile = Nothing }
-        (Right (Right f), Right a) -> switcher now f a
+        (Right f, Right a) -> switcher now f a
   where 
-    fileData :: Either P.InternalParseError 
-                  (Either P.BadLines P.Clocks)
+    fileData :: Either P.BadLines P.Clocks
     fileData = P.parseClockFile now fileContents
     parsedArgs = G.argParse now args
 

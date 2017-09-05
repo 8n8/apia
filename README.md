@@ -30,8 +30,6 @@ The data file format follows these rules:
 
 ## Usage examples
 
-The time is in days since 00:00 on 1st October 2016 in UTC, so there are no years, months, weeks, hours, minutes or seconds, just days.
-
 Start work on a task with two tags, `work` and `code`:
 
 ```apia clockin work code```
@@ -71,6 +69,8 @@ Find the average daily work on the tags `work` and `code` between days 101 and 1
 Get the current time:
 
 ```apia now```
+
+The time is in days since 00:00 on 1st October 2016 in UTC, so there are no years, months, weeks, hours, minutes or seconds, just days.
 
 The order of the tags does not matter.  For the `daily` option and similar, supplying a tag excludes all the records that don't have it, so providing no tags includes everything.
 

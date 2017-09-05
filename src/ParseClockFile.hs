@@ -23,13 +23,13 @@
 -- This module parses the file that contains the clock
 -- records.
 
+
 module ParseClockFile
     (
       BadLines (..)
     , ClockEnd (..)
     , ClockFileState (..)
     , Clocks (..)
-    , InternalParseError (..)
     , Session (..)
     , parseClockFile
     ) where
@@ -116,9 +116,9 @@ instance Show BadLineType where
 parseClockFile ::
     Float ->
     String ->
-    Either InternalParseError (Either BadLines Clocks)
-parseClockFile _ "" = Right (Right (Clocks [] Empty))
-parseClockFile now f = (\eitherClocks ->
+    Either BadLines Clocks
+parseClockFile _ "" = Right (Clocks [] Empty)
+parseClockFile now f =
     case sequence eitherClocks of
         Left _ -> Left (BadLines (E.lefts eitherClocks))
         Right s -> Right Clocks 
@@ -126,8 +126,9 @@ parseClockFile now f = (\eitherClocks ->
             , clockstate = 
                    if isClosed (end $ last s)
                    then AllClocksClosed
-                   else LastClockOpen (taglist $ last s) })
-    <$> file2sess now f 
+                   else LastClockOpen (taglist $ last s) }
+  where
+    eitherClocks = file2sess now f 
 
 isClosed :: ClockEnd -> Bool
 isClosed (Closed _) = True
@@ -136,10 +137,9 @@ isClosed _ = False
 file2sess ::
     Float ->
     String ->
-    Either InternalParseError [Either BadLine Session]
+    [Either BadLine Session]
 file2sess now f = 
-    sequence [ line2sess n ofN now line | 
-               (n,line) <- zip [1..] lns ]
+    [ line2sess n ofN now line | (n,line) <- zip [1..] lns ]
   where 
     lns = map words . lines $ f
     ofN = length lns
@@ -153,26 +153,24 @@ line2sess ::
     Int ->
     Float ->
     [String] ->
-    Either InternalParseError (Either BadLine Session)
+    Either BadLine Session
 line2sess n _ _ [] =
-    Right (Left BadLine { errType = EmptyLine, lineNum = n })
+    Left BadLine { errType = EmptyLine, lineNum = n }
 line2sess n _ _ [_] = 
-    Right (Left BadLine 
-        { errType = OnlyOneWordOnLine, lineNum = n })
+    Left BadLine { errType = OnlyOneWordOnLine, lineNum = n }
 line2sess n ofN now line =
     case lookForBadWords line of
-        Left err -> Left err
-        Right (Just err) -> Right (Left (BadLine err n))
-        Right Nothing ->
+        Just err -> Left (BadLine err n)
+        Nothing ->
             case lookForBadClock start stop n ofN now of
-                Just err -> Right (Left (BadLine err n))
-                Nothing -> Right (Right Session
+                Just err -> Left (BadLine err n)
+                Nothing -> Right Session
                     { taglist = 
                         if clockClosed
                         then L.sort . L.nub . init . init $ line
                         else L.sort . L.nub . init $ line
                     , begin = start
-                    , end = stop })
+                    , end = stop }
   where 
     clockClosed = isNum . last . init $ line
     (start, stop) =
@@ -183,35 +181,34 @@ line2sess n ofN now line =
             
 data WordType = Tag | Clock deriving Eq
 
-data InternalParseError = 
-    LookForBadWordsGivenEmptyList |
-    ParseBackwardsGivenOneItemList |
-    ParseBackwardsGivenEmptyList deriving (Eq, Show)
+-- data InternalParseError = 
+--     LookForBadWordsGivenEmptyList |
+--     ParseBackwardsGivenOneItemList |
+--     ParseBackwardsGivenEmptyList deriving (Eq, Show)
 
 -- It takes in a line and works out what is wrong with it,
 -- if anything.
 lookForBadWords ::
     [String] -> 
-    Either InternalParseError (Maybe BadLineType)
-lookForBadWords [] = Left LookForBadWordsGivenEmptyList 
+    Maybe BadLineType
 lookForBadWords s = parseBackwards . reverse $ wordTypes
   where 
     wordTypes = map (\x -> if isNum x then Clock else Tag) s
 
 parseBackwards :: 
     [WordType] -> 
-    Either InternalParseError (Maybe BadLineType)
-parseBackwards [] = Left ParseBackwardsGivenEmptyList 
-parseBackwards [_] = Left ParseBackwardsGivenOneItemList
-parseBackwards (Tag:_) = Right (Just LastWordNotNumeric)
+    Maybe BadLineType
+parseBackwards [] = Just EmptyLine
+parseBackwards [Clock] = Just OnlyOneWordOnLine
+parseBackwards (Tag:_) = Just LastWordNotNumeric
 parseBackwards (Clock:Tag:xs)  
-    | all (Tag ==) xs = Right Nothing
-    | otherwise = Right (Just AtLeastOneNumericTag)
+    | all (Tag ==) xs = Nothing
+    | otherwise = Just AtLeastOneNumericTag
 parseBackwards [Clock,Clock] = 
-    Right (Just AtLeastOneNumericTag)
+    Just AtLeastOneNumericTag
 parseBackwards (Clock:Clock:xs)
-    | all (Tag ==) xs = Right Nothing
-    | otherwise = Right (Just AtLeastOneNumericTag)
+    | all (Tag ==) xs = Nothing
+    | otherwise = Just AtLeastOneNumericTag
 
 -- It does some checks on the clocks in a session.
 lookForBadClock ::

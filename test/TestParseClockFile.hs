@@ -12,11 +12,10 @@ tests =
 parseClockFile :: TT.TestTree
 parseClockFile = TT.testGroup "parseClockFile"
     [ HU.testCase "empty" $
-        P.parseClockFile 0 "" HU.@?= 
-            Right (Right (P.Clocks [] P.Empty))
+        P.parseClockFile 0 "" HU.@?= Right (P.Clocks [] P.Empty)
     , HU.testCase "one line" $
         P.parseClockFile 4 file1 HU.@?=
-            Right (Right (P.Clocks sess1 P.AllClocksClosed))
+            Right (P.Clocks sess1 P.AllClocksClosed)
     ]
         
 sess1 :: [P.Session]
