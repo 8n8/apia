@@ -2,27 +2,23 @@
 
 -- This file is part of Apia.
 
--- Apia is free software: you can redistribute it
--- and/or modify it under the terms of the GNU General
--- Public License as published by the Free Software
--- Foundation, either version 3 of the License, or (at
--- your option) any later version.
+-- Apia is free software: you can redistribute it and/or modify it
+-- under the terms of the GNU General Public License as published by
+-- the Free Software Foundation, either version 3 of the License, or
+-- (at your option) any later version.
 
--- Apia is distributed in the hope that it will be
--- useful, but WITHOUT ANY WARRANTY; without even the
--- implied warranty of MERCHANTABILITY or FITNESS FOR
--- A PARTICULAR PURPOSE.  See the GNU General Public
--- License for more details.
+-- Apia is distributed in the hope that it will be useful, but
+-- WITHOUT ANY WARRANTY; without even the implied warranty of
+-- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+-- GNU General Public License for more details.
 
--- You should have received a copy of the GNU General
--- Public License along with Apia.  If not, see
--- <http://www.gnu.org/licenses/>.
+-- You should have received a copy of the GNU General Public License
+-- along with Apia.  If not, see <http://www.gnu.org/licenses/>.
 
 -- DESCRIPTION
 
 -- This module parses the file that contains the clock
 -- records.
-
 
 module ParseClockFile
     (
@@ -97,26 +93,21 @@ instance Show BadLineType where
     show BeginTimeIsInTheFuture = 
         "The start time is in the future."
     show EmptyLine = "The line is empty."
-    show EndTimeIsBeforeBeginTime = "The closing clock is \
-        \earlier than the opening clock."
-    show EndTimeIsInTheFuture = "The closing clock is in \
-        \the future."
-    show LastWordNotNumeric = "The last word is not a \
-        \clock, that is, it contains a character that \
-        \is not a number or a decimal point."
+    show EndTimeIsBeforeBeginTime = "The closing clock is earlier \
+        \than the opening clock."
+    show EndTimeIsInTheFuture = "The closing clock is in the future."
+    show LastWordNotNumeric = "The last word is not a clock, that \
+        \is, it contains a character that is not a number or a \
+        \decimal point."
     show OnlyOneWordOnLine = "There is only one word."
-    show OpenClockNotOnLastLine = "The clock has not been \
-        \closed and it is not on the last line of the file. \
-        \Only the last line in the file is allowed to have \
-        \an open clock."
-    show AtLeastOneNumericTag = "One of the tags only \
-        \contains numbers.  It should contain at least one \
-        \character that is not a number or a decimal point."
+    show OpenClockNotOnLastLine = "The clock has not been closed and \
+        \it is not on the last line of the file.  Only the last line \
+        \in the file is allowed to have an open clock."
+    show AtLeastOneNumericTag = "One of the tags only contains \
+        \numbers.  It should contain at least one character that is \
+        \not a number or a decimal point."
 
-parseClockFile ::
-    Float ->
-    String ->
-    Either BadLines Clocks
+parseClockFile :: Float -> String -> Either BadLines Clocks
 parseClockFile _ "" = Right (Clocks [] Empty)
 parseClockFile now f =
     case sequence eitherClocks of
@@ -144,10 +135,9 @@ file2sess now f =
     lns = map words . lines $ f
     ofN = length lns
 
--- It converts a line in the clock file to a Session, or a 
--- BadLine if it is wrong.  The first argument is the line
--- number and the second is the total number of lines in
--- the file.
+-- It converts a line in the clock file to a Session, or a BadLine if
+-- it is wrong.  The first argument is the line number and the second
+-- is the total number of lines in the file.
 line2sess ::
     Int ->
     Int ->
@@ -181,13 +171,8 @@ line2sess n ofN now line =
             
 data WordType = Tag | Clock deriving Eq
 
--- data InternalParseError = 
---     LookForBadWordsGivenEmptyList |
---     ParseBackwardsGivenOneItemList |
---     ParseBackwardsGivenEmptyList deriving (Eq, Show)
-
--- It takes in a line and works out what is wrong with it,
--- if anything.
+-- It takes in a line and works out what is wrong with it, if
+-- anything.
 lookForBadWords ::
     [String] -> 
     Maybe BadLineType

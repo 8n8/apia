@@ -2,21 +2,18 @@
 
 -- This file is part of Apia.
 
--- Apia is free software: you can redistribute it
--- and/or modify it under the terms of the GNU General
--- Public License as published by the Free Software
--- Foundation, either version 3 of the License, or (at
--- your option) any later version.
+-- Apia is free software: you can redistribute it and/or modify it
+-- under the terms of the GNU General Public License as published by
+-- the Free Software Foundation, either version 3 of the License, or
+-- (at your option) any later version.
 
--- Apia is distributed in the hope that it will be
--- useful, but WITHOUT ANY WARRANTY; without even the
--- implied warranty of MERCHANTABILITY or FITNESS FOR
--- A PARTICULAR PURPOSE.  See the GNU General Public
--- License for more details.
+-- Apia is distributed in the hope that it will be useful, but
+-- WITHOUT ANY WARRANTY; without even the implied warranty of
+-- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+-- GNU General Public License for more details.
 
--- You should have received a copy of the GNU General
--- Public License along with Apia.  If not, see
--- <http://www.gnu.org/licenses/>.
+-- You should have received a copy of the GNU General Public License
+-- along with Apia.  If not, see <http://www.gnu.org/licenses/>.
 
 -- DESCRIPTION
 
@@ -27,7 +24,6 @@ module ArgParse
     , BadCommand (..)
     , argParse
     ) where
-
 
 import Data.Char as C
 import qualified Data.List as Dl
@@ -100,14 +96,14 @@ snd3 (_,x,_) = x
 thd3 :: (a,b,c) -> c
 thd3 (_,_,x) = x
 
--- Like ordinary 'uncurry', but for functions with three 
--- inputs instead of two.
+-- Like ordinary 'uncurry', but for functions with three inputs
+-- instead of two.
 uncurry3 :: (a -> b -> c -> d) -> (a, b, c) -> d
 uncurry3 f p = f (fst3 p) (snd3 p) (thd3 p)
 
 -- Some of the commands end with <start time>, <stop time>,
--- <list of tags>.  This function is used for checking
--- that part and turning it into the right form.
+-- <list of tags>.  This function is used for checking that part
+-- and turning it into the right form.
 toCommand :: Float -> String -> String -> [String] 
           -> Either BadCommand (Int,Int,[String])
 toCommand now start stop tags
@@ -136,30 +132,28 @@ toInt :: String -> Maybe Int
 toInt x = Tr.readMaybe x :: Maybe Int
 
 instance Show BadCommand where 
-    show (NumericTags xs) = "Tags should have at least one \
-        \non-numeric character in them.  There was a \
-        \problem with the following:\n" ++ 
-        Dl.intercalate "\n" xs
-    show StartNotInt = "The start time you gave was not in \
-        \the right form.  It should be a whole number."
-    show StopNotInt = "The stop time you gave was not in \
-        \the right form.  It should be a whole number."
-    show StartIsInTheFuture = "The start time you gave is \
-        \in the future."
-    show StopIsInTheFuture = "The stop time you gave is in \
-        \the future."
-    show BothStartAndStopNotInt = "Both the start and stop \
-        \you gave were not in the right form.  They should \
-        \be whole numbers."
-    show YouNeedAtLeastOneTag = "You need to provide at \
-        \least one tag."
-    show YouCantUseTotalAsATag = "You can't use the word \
-        \'total' as a tag."
+    show (NumericTags xs) = "Tags should have at least one non-\
+        \numeric character in them.  There was a problem with the \
+        \following:\n" ++ Dl.intercalate "\n" xs
+    show StartNotInt = "The start time you gave was not in the right \
+        \form.  It should be a whole number."
+    show StopNotInt = "The stop time you gave was not in the right \
+        \form.  It should be a whole number."
+    show StartIsInTheFuture = "The start time you gave is in the \
+        \future."
+    show StopIsInTheFuture = "The stop time you gave is in the \
+        \future."
+    show BothStartAndStopNotInt = "Both the start and stop you gave \
+        \were not in the right form.  They should be whole numbers."
+    show YouNeedAtLeastOneTag = "You need to provide at least one \
+        \tag."
+    show YouCantUseTotalAsATag = "You can't use the word 'total' as \
+        \a tag."
     show UnhelpfulFail = "Apia 1.0.0 (2017-04-16) \n\
-        \Copyright (C) 5-o 2017.  Licensed under \
-        \the GNU General Public License Version 3.\n\
-        \Apia is a command-line time logger.  Look in the\
-        \README for usage examples."
+        \Copyright (C) 5-o 2017.  Licensed under the GNU General \
+        \Public License Version 3.\n\
+        \Apia is a command-line time logger.  Look in the README for \
+        \usage examples."
 
 isNum :: String -> Bool
 isNum = Dl.all (`elem` "1234567890.")

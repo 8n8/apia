@@ -2,27 +2,23 @@
 
 -- This file is part of Apia.
 
--- Apia is free software: you can redistribute it
--- and/or modify it under the terms of the GNU General
--- Public License as published by the Free Software
--- Foundation, either version 3 of the License, or (at
--- your option) any later version.
+-- Apia is free software: you can redistribute it and/or modify it
+-- under the terms of the GNU General Public License as published by
+-- the Free Software Foundation, either version 3 of the License, or
+-- (at your option) any later version.
 
--- Apia is distributed in the hope that it will be
--- useful, but WITHOUT ANY WARRANTY; without even the
--- implied warranty of MERCHANTABILITY or FITNESS FOR
--- A PARTICULAR PURPOSE.  See the GNU General Public
--- License for more details.
+-- Apia is distributed in the hope that it will be useful, but
+-- WITHOUT ANY WARRANTY; without even the implied warranty of
+-- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+-- GNU General Public License for more details.
 
--- You should have received a copy of the GNU General
--- Public License along with Apia.  If not, see
--- <http://www.gnu.org/licenses/>.
+-- You should have received a copy of the GNU General Public License
+-- along with Apia.  If not, see <http://www.gnu.org/licenses/>.
 
 -- DESCRIPTION
 
--- It converts the raw input into a record containing
--- the message for the user and the string to write in
--- the clock file.
+-- It converts the raw input into a record containing the message
+-- for the user and the string to write in the clock file.
 
 module ChooseAction 
     ( chooseActions
@@ -50,16 +46,15 @@ instance Show Do2File where
     show (WriteSwitch now tags) = 
         ' ':show now ++ "\n" ++ clockLn tags now
 
--- This does everything.  It takes in the current time,
--- the list of input arguments, the data file contents and 
--- the usage file contents, and gives a record containing a
--- message to print out and a string to append to the clock file.
+-- This does everything.  It takes in the current time, the list of
+-- input arguments, the data file contents and the usage file contents,
+-- and gives a record containing a message to print out and a string
+-- to append to the clock file.
 chooseActions :: Float -> [String] -> String -> Actions
 chooseActions now args fileContents = 
-    -- The fileData variable is a nested Either expression.
-    -- The outer layer contains internal errors, such as 
-    -- unlikely pattern matches, and the inner layer contains
-    -- errors in the clock file.
+    -- The fileData variable is a nested Either expression.  The
+    -- outer layer contains internal errors, such as unlikely pattern
+    -- matches, and the inner layer contains errors in the clock file.
     case (fileData, parsedArgs) of
         (_, Left a) -> Actions 
             { msg = Just (T.YouGaveBadArgs a)
@@ -73,14 +68,13 @@ chooseActions now args fileContents =
     fileData = P.parseClockFile now fileContents
     parsedArgs = G.argParse now args
 
--- It makes the line to write to the clock file when
--- clocking in.
+-- It makes the line to write to the clock file when clocking in.
 clockLn :: [String] -> Float -> String
 clockLn tags now = unwords tags ++ ' ':show now
 
--- It chooses what action to take depending on the
--- input arguments.  It does not deal with errors.  These
--- should have been sorted beforehand.
+-- It chooses what action to take depending on the input
+-- arguments.  It does not deal with errors.  These should have been
+-- sorted beforehand.
 switcher ::
     Float ->  -- The current time.
     P.Clocks ->  -- The parsed data file.

@@ -2,26 +2,23 @@
 
 -- This file is part of Apia.
 
--- Apia is free software: you can redistribute it
--- and/or modify it under the terms of the GNU General
--- Public License as published by the Free Software
--- Foundation, either version 3 of the License, or (at
--- your option) any later version.
-
--- Apia is distributed in the hope that it will be
--- useful, but WITHOUT ANY WARRANTY; without even the
--- implied warranty of MERCHANTABILITY or FITNESS FOR
--- A PARTICULAR PURPOSE.  See the GNU General Public
--- License for more details.
-
--- You should have received a copy of the GNU General
--- Public License along with Apia.  If not, see
--- <http://www.gnu.org/licenses/>.
+-- Apia is free software: you can redistribute it and/or modify it
+-- under the terms of the GNU General Public License as published by
+-- the Free Software Foundation, either version 3 of the License, or
+-- (at your option) any later version.
+-- 
+-- Apia is distributed in the hope that it will be useful, but
+-- WITHOUT ANY WARRANTY; without even the implied warranty of
+-- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+-- GNU General Public License for more details.
+-- 
+-- You should have received a copy of the GNU General Public License
+-- along with Apia.  If not, see <http://www.gnu.org/licenses/>.
 
 -- DESCRIPTION
 
--- This module provides functions for extracting useful
--- data from the history of clocked sessions.
+-- This module provides functions for extracting useful data from
+-- the history of clocked sessions.
 
 module AnalyseHistory 
     ( dailyDurations
@@ -35,12 +32,13 @@ module AnalyseHistory
 import qualified ParseClockFile as P
 import qualified Data.List as L 
 
--- It calculates the work done each day for the work that
--- matches the input tags.  The tuples in the output contain
--- the day number in the first element and the work done
--- on that day in the second element.
-dailyDurations :: P.Clocks -> Int -> Int -> [String] -> Float
-    -> [(Int, Float)]
+-- It calculates the work done each day for the work that matches the
+-- input tags.  The tuples in the output contain the day number in
+-- the first element and the work done on that day in the second
+-- element.
+dailyDurations ::
+    P.Clocks -> Int -> Int -> [String] -> Float ->
+    [(Int, Float)]
 dailyDurations f start stop tags now =
     map oneday [start..stop]
   where
@@ -54,30 +52,21 @@ dailyDurations f start stop tags now =
     daySum :: Int -> Float
     daySum day = sum $ map (eachDay day now) filtered
 
--- It checks that all the elements in the first list
--- are also in the second list.
+-- It checks that all the elements in the first list are also in the
+-- second list.
 all1in2 :: [String] -> [String] -> Bool
 all1in2 one two = L.all (`elem` two) one
 
-total ::
-    [P.Session] ->
-    Float ->
-    Int ->
-    Int ->
-    Float
+total :: [P.Session] -> Float -> Int -> Int -> Float
 total s now start stop =
     sum $ map sesstot s 
   where  
     sesstot :: P.Session -> Float
     sesstot sess = sum $ map (\d -> eachDay d now sess) [start..stop]
 
--- It takes in a day number and a session and gives the
--- amount of the session's time that was on that day.
-eachDay ::
-    Int ->
-    Float ->
-    P.Session ->
-    Float
+-- It takes in a day number and a session and gives the amount of
+-- the session's time that was on that day.
+eachDay :: Int -> Float -> P.Session -> Float
 eachDay day now (P.Session _ begin P.Open)
     | begin `before` day =
         if now > (i2f day + 1)
@@ -107,17 +96,11 @@ after x day = x > i2f day + 1
 i2f :: Int -> Float
 i2f = fromIntegral
 
--- It takes in the contents of the clock file after parsing,
--- the current time, and a start and stop day.  The result is
--- a list of tuples, each tuple containing a unique tag in its
--- first element, and the total work done on it in milliDays in 
--- its second element.
-summary ::
-    P.Clocks ->
-    Float ->
-    Int ->
-    Int ->
-    [(String,Int)]
+-- It takes in the contents of the clock file after parsing, the
+-- current time, and a start and stop day.  The result is a list of
+-- tuples, each tuple containing a unique tag in its first element,
+-- and the total work done on it in milliDays in its second element.
+summary :: P.Clocks -> Float -> Int -> Int -> [(String,Int)]
 summary f now start stop = breakdown ++ totaltime
   where
     breakdown = totalOnEachTag f now start stop
@@ -126,13 +109,9 @@ summary f now start stop = breakdown ++ totaltime
     tot :: Int
     tot = (truncate . (1000*)) $ total (P.sessions f) now start stop
 
--- It works out the total time spent on each tag in the given time period.
-totalOnEachTag ::
-    P.Clocks ->
-    Float ->
-    Int ->
-    Int ->
-    [(String,Int)]
+-- It works out the total time spent on each tag in the given time
+-- period.
+totalOnEachTag :: P.Clocks -> Float -> Int -> Int -> [(String,Int)]
 totalOnEachTag f now start stop =
     map onetag tags 
   where
@@ -179,25 +158,16 @@ getTagsForPeriod now start stop =
               i2f start >= sessionEnd
         )
   
--- It finds the mean daily time for the tags in
--- the arguments.
-daymean ::
-    P.Clocks ->
-    Int ->
-    Int ->
-    [String] ->
-    Float ->
-    Float
+-- It finds the mean daily time for the tags in the arguments.
+daymean :: P.Clocks -> Int -> Int -> [String] -> Float -> Float
 daymean f start stop tags now = 
-    (sum byday) / period
+    sum byday / period
   where
-    -- It is a list of the daily totals of work matching
-    -- the tags.
+    -- It is a list of the daily totals of work matching the tags.
     byday :: [Float]
     byday = map snd $ dailyDurations f start stop tags now
-    -- It is the period of time the mean is taken over.
-    -- The +1 is so that it counts both ends of the 
-    -- period.
+    -- It is the period of time the mean is taken over.  The +1 is
+    -- so that it counts both ends of the period.
     period :: Float
     period = fromIntegral $ stop - start + 1
 
@@ -205,8 +175,8 @@ daymean f start stop tags now =
 getTagList :: [P.Session] -> [String]
 getTagList = L.sort . L.nub . concatMap P.taglist
 
--- It makes a list of the tags in the argument that are
--- not in the clock file.
+-- It makes a list of the tags in the argument that are not in the
+-- clock file.
 newtags :: [P.Session] -> [String] -> [String]
 newtags s tags = L.sort . filter (`notElem` oldtags) $ L.nub tags
     where oldtags = getTagList s
