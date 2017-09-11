@@ -63,36 +63,29 @@ total s now start stop =
   where  
     sesstot :: P.Session -> Float
     sesstot sess = sum $ map (\d -> eachDay d now sess) [start..stop]
-
+    
 -- It takes in a day number and a session and gives the amount of
 -- the session's time that was on that day.
 eachDay :: Int -> Float -> P.Session -> Float
-eachDay day now (P.Session _ begin P.Open)
-    | begin `before` day =
-        if now > (i2f day + 1)
-        then 1
-        else now - i2f day
-    | begin `during` day =
-        if now > (i2f day + 1)
-        then i2f day + 1 - begin
-        else now - begin
-    | begin `after` day = 0
-eachDay day _ (P.Session _ begin (P.Closed end))
-    | begin `after` day = 0
-    | end `before` day = 0
-    | begin `before` day, end `during` day = end - i2f day
-    | begin `before` day, end `after` day = 1
-    | begin `during` day, end `during` day = end - begin
-    | begin `during` day, end `after` day = i2f day + 1 - begin
-eachDay _ _ _ =
-    error "Internal error: incomplete pattern match on 'eachDay'\
-        \function in AnalyseHistory.hs." 
-    
-before, during, after :: Float -> Int -> Bool
-before x day = x < i2f day
-during x day = x >= i2f day && x <= i2f day + 1
-after x day = x > i2f day + 1
-    
+eachDay dayInt now (P.Session _ begin end) =
+    rangeOverlap (daystart, dayend) (begin, endFloat)
+  where
+    daystart = i2f dayInt
+    dayend = daystart + 1
+    endFloat = sessEnd end now
+
+sessEnd :: P.ClockEnd -> Float -> Float
+sessEnd P.Open now = now
+sessEnd (P.Closed end) _ = end
+
+rangeOverlap :: (Float, Float) -> (Float, Float) -> Float
+rangeOverlap (a, b) (c, d) = 
+    if overlap < 0
+    then 0
+    else overlap
+  where
+    overlap = (b - a) + (d - c) - max b d + min a c
+
 i2f :: Int -> Float
 i2f = fromIntegral
 
