@@ -8,11 +8,15 @@ The installation has been tested in Ubuntu 16.04 and Fedora 26.
 
 If you are used to using Git and the Haskell Tool Stack then you can just clone the repo, then do stack setup, stack build and stack install etc.
 
-If not: You should have git and wget installed.  Then run this command to download and run the installation script:
+If not: you should have git and wget installed.  In Ubuntu they can be installed with the command:
+
+```sudo apt install wget git```
+
+Then run this command to download and run the installation script:
 
 ```sh -c "$(wget https://bitbucket.org/5-o/apia/raw/master/install.sh -O -)"```
 
-This takes ages (~ 20 mins) on a clean Ubuntu install as it has to download and install all the Haskell stuff and compile everything.
+This takes about 20 minutes on a clean Ubuntu install as it has to download and install the Haskell compiler and all the dependencies.
 
 To uninstall this program, delete the file $HOME/.local/bin/apia.  To uninstall all the Haskell stuff, delete the directory $HOME/.stack
 
