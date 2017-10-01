@@ -18,7 +18,7 @@ Then run this command to download and run the installation script:
 
 This takes about 20 minutes on a clean Ubuntu install as it has to download and install the Haskell compiler and all the dependencies.
 
-To uninstall this program, delete the file $HOME/.local/bin/apia.  To uninstall all the Haskell stuff, delete the directory $HOME/.stack
+To uninstall this program, delete the file $HOME/.local/bin/apia.  To uninstall the Haskell Tool Stack, delete the directory $HOME/.stack
 
 ## Clock file format
 
