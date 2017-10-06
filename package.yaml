@@ -10,7 +10,6 @@ dependencies:
   - base >= 4.8.1.0 && < 5
   - directory
   - time
-  - aeson >=0.10 && <1.0
 
 library:
   source-dirs: src
