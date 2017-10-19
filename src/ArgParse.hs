@@ -149,10 +149,8 @@ instance Show BadCommand where
         \tag."
     show YouCantUseTotalAsATag = "You can't use the word 'total' as \
         \a tag."
-    show UnhelpfulFail = "Apia 1.0.0 (2017-04-16) \n\
-        \Copyright (C) 5-o 2017.  Licensed under the GNU General \
-        \Public License Version 3.\n\
-        \Apia is a command-line time logger.  Look in the README for \
+    show UnhelpfulFail = "You typed an unknown command.  Look in the \
+        \README in the source code or at bitbucket.org/5-o/apia for \
         \usage examples."
 
 isNum :: String -> Bool
