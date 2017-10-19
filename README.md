@@ -6,17 +6,21 @@ Apia is a personal work time logger written in Haskell.  It has a command-line i
 
 The installation has been tested in Ubuntu 16.04 and Fedora 26.
 
-If you are used to using Git and the Haskell Tool Stack then you can just clone the repo, then do stack setup, stack build and stack install etc.
+If you are used to using Git and the Haskell Tool Stack then you can just clone this repository and compile and install in the usual way.
 
-If not: you should have git and wget installed.  In Ubuntu they can be installed with the command:
+If not, you should first make sure you have Git and Wget installed.  In Ubuntu they can be installed with the command:
 
 ```sudo apt install wget git```
+
+and in Fedora with:
+ 
+```sudo dnf install wget git```
 
 Then run this command to download and run the installation script:
 
 ```sh -c "$(wget https://bitbucket.org/5-o/apia/raw/master/install.sh -O -)"```
 
-This takes about 20 minutes on a clean Ubuntu install as it has to download and install the Haskell compiler and all the dependencies.
+This takes about 20 minutes on a clean Ubuntu install.
 
 To uninstall this program, delete the file $HOME/.local/bin/apia.  To uninstall the Haskell Tool Stack, delete the directory $HOME/.stack
 
