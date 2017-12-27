@@ -79,10 +79,7 @@ sessEnd P.Open now = now
 sessEnd (P.Closed end) _ = end
 
 rangeOverlap :: (Float, Float) -> (Float, Float) -> Float
-rangeOverlap (a, b) (c, d) = 
-    if overlap < 0
-    then 0
-    else overlap
+rangeOverlap (a, b) (c, d) = max 0 overlap
   where
     overlap = (b - a) + (d - c) - max b d + min a c
 

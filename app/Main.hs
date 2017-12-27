@@ -41,7 +41,7 @@ main =
     readFile clockfile >>= \f ->
     case C.chooseActions now args f of
         C.Actions Nothing Nothing ->
-            print pathetic
+            print internalErrorMsg
         C.Actions (Just msg) Nothing ->
             print msg
         C.Actions Nothing (Just toFile) ->
@@ -49,10 +49,6 @@ main =
         C.Actions (Just msg) (Just toFile) ->
             print msg >> (appendFile clockfile . show) toFile
         
-pathetic :: String
-pathetic =
-    "Internal error:  The program resulted in nothing at all being \
-    \done, which makes you wonder what the point of everything is.  \
-    \It just makes you ask why you were even born, and why, given \
-    \that you were, the world you were born into is such a futile \
-    \waste."
+internalErrorMsg :: String
+internalErrorMsg = "Internal error: the program resulted in nothing at all \
+    \begin done.  This is a bug."

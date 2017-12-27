@@ -28,6 +28,7 @@ module ArgParse
 import Data.Char as C
 import qualified Data.List as Dl
 import qualified Text.Read as Tr
+import qualified UsageText as Usage
 
 data GoodCommand = 
     ClockedIn |
@@ -149,9 +150,8 @@ instance Show BadCommand where
         \tag."
     show YouCantUseTotalAsATag = "You can't use the word 'total' as \
         \a tag."
-    show UnhelpfulFail = "You typed an unknown command.  Look in the \
-        \README in the source code or at bitbucket.org/5-o/apia for \
-        \usage examples."
+    show UnhelpfulFail = "You typed an unknown command.\n\n" ++ Usage.text
+
 
 isNum :: String -> Bool
 isNum = Dl.all (`elem` "1234567890.")
