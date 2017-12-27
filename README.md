@@ -4,7 +4,7 @@ Apia is a personal work time logger written in Haskell.  It has a command-line i
 
 ## Installation
 
-You need to know how to use Git and the [Haskell Tool Stack](https://docs.haskellstack.org/en/stable/README/).  Clone this repository, cd into it and run ```stack install```.
+First install Git and the [Haskell Tool Stack](https://docs.haskellstack.org/en/stable/README/).  Then clone this repository, cd into it and run ```stack install```.
 
 ## Clock file format
 
