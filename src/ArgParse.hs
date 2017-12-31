@@ -88,19 +88,10 @@ argParse _ _ = Left UnhelpfulFail
 isTotal :: String -> Bool
 isTotal = (=="total") . map C.toLower
 
-fst3 :: (a,b,c) -> a
-fst3 (x,_,_) = x
-
-snd3 :: (a,b,c) -> b
-snd3 (_,x,_) = x
-
-thd3 :: (a,b,c) -> c
-thd3 (_,_,x) = x
-
 -- Like ordinary 'uncurry', but for functions with three inputs
 -- instead of two.
 uncurry3 :: (a -> b -> c -> d) -> (a, b, c) -> d
-uncurry3 f p = f (fst3 p) (snd3 p) (thd3 p)
+uncurry3 f (a, b, c) = f a b c
 
 -- Some of the commands end with <start time>, <stop time>,
 -- <list of tags>.  This function is used for checking that part
