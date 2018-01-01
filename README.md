@@ -1,6 +1,6 @@
 # Apia
 ## Description
-Apia is a personal work time logger written in Haskell.  It has a command-line interface.  The data is kept in a plain text file at ~/.apia.  It is useful for quickly logging what you are working on and summarising what you have done.
+Apia is a personal work time logger written in Haskell.  It has a command-line interface.  The data is kept in a plain text file at ~/.apia.
 
 ## Installation
 
