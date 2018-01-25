@@ -29,17 +29,17 @@ import qualified System.Directory as Sd
 import qualified System.Environment as SEnv
 
 -- It makes the clock file if it is not there, reads the current
--- time, reads the input arguments, reads the clock file, works out
--- what do to, and does it.
+-- time, reads the input arguments, reads the clock file, and does one
+-- or both of writing to the clock file and printing a message.
 main :: IO ()
-main =
-    (++ "/.apia") <$> Sd.getHomeDirectory >>= \clockfile ->
-    (Sd.doesFileExist clockfile >>= \x ->
-     Cm.unless x $ writeFile clockfile "") >>
-    T.utc2dt <$> Dt.getCurrentTime >>= \now ->
-    SEnv.getArgs >>= \args ->
-    readFile clockfile >>= \f ->
-    case C.chooseActions now args f of
+main = do
+    clockfile <- (++ "/.apia") <$> Sd.getHomeDirectory
+    fileExists <- Sd.doesFileExist clockfile
+    Cm.unless fileExists $ writeFile clockfile ""
+    now <- T.utc2dt <$> Dt.getCurrentTime
+    args <- SEnv.getArgs
+    filecontents <- readFile clockfile
+    case C.chooseActions now args filecontents of
         C.Actions Nothing Nothing ->
             print internalErrorMsg
         C.Actions (Just msg) Nothing ->

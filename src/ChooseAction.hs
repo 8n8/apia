@@ -46,15 +46,11 @@ instance Show Do2File where
     show (WriteSwitch now tags) = 
         ' ':show now ++ "\n" ++ clockLn tags now
 
--- This does everything.  It takes in the current time, the list of
--- input arguments, the data file contents and the usage file contents,
--- and gives a record containing a message to print out and a string
--- to append to the clock file.
+-- It takes in the current time, the list of input arguments, the data
+-- file contents, and gives a record containing a message to print out
+-- and a string to append to the clock file.
 chooseActions :: Float -> [String] -> String -> Actions
 chooseActions now args fileContents = 
-    -- The fileData variable is a nested Either expression.  The
-    -- outer layer contains internal errors, such as unlikely pattern
-    -- matches, and the inner layer contains errors in the clock file.
     case (fileData, parsedArgs) of
         (_, Left a) -> Actions 
             { msg = Just (T.YouGaveBadArgs a)
@@ -72,9 +68,7 @@ chooseActions now args fileContents =
 clockLn :: [String] -> Float -> String
 clockLn tags now = unwords tags ++ ' ':show now
 
--- It chooses what action to take depending on the input
--- arguments.  It does not deal with errors.  These should have been
--- sorted beforehand.
+-- It chooses what action to take depending on the input arguments.
 switcher ::
     Float ->  -- The current time.
     P.Clocks ->  -- The parsed data file.
