@@ -32,31 +32,10 @@ summary :: TT.TestTree
 summary = TT.testGroup "summary"
     [ HU.testCase "empty" $
         summary1 HU.@?= [("total", 0)]
-    , HU.testCase "simple" $
-        summary2 HU.@?= sums 
-    , HU.testCase "old bug" $
-        summary3 HU.@?= sums3
-    , HU.testCase "new bug" $
-        summary4 HU.@?= sums4 ]
+    ]
   where
-    summary4 = 
-        A.summary (P.Clocks sess4 (P.LastClockOpen ["a"])) 3.4 3 3
-    sess4 = 
-        [ P.Session ["a"] 3.2 P.Open ]
-    sums4 = [ ("a", 200), ("total", 200) ]
-    summary3 =
-        A.summary (P.Clocks sess3 (P.LastClockOpen ["c", "a"])) 287.9003 2 287
-    sess3 = 
-        [ P.Session [ "x" ] 2.8 (P.Closed 3)
-        , P.Session ["c", "a"] 286.8 P.Open ]
-    sums3 = [ ("a", 1100), ("c", 1100), ("x", 200), ("total", 1300)]
     summary1 = 
         A.summary (P.Clocks [] P.Empty) 0 0 0
-    summary2 = 
-        A.summary (P.Clocks sesses (P.LastClockOpen ["b"])) 8.888 3 6
-    sums = [("^", 99), ("b", 99), ("total", 99)]
-    sesses = 
-        [ P.Session [ "^", "b" ] 3 (P.Closed 3.1) ]
     
 getTagsForPeriod :: TT.TestTree
 getTagsForPeriod = TT.testGroup "getTagsForPeriod"

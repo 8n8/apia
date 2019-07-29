@@ -90,29 +90,29 @@ i2f = fromIntegral
 -- current time, and a start and stop day.  The result is a list of
 -- tuples, each tuple containing a unique tag in its first element,
 -- and the total work done on it in milliDays in its second element.
-summary :: P.Clocks -> Float -> Int -> Int -> [(String,Int)]
+summary :: P.Clocks -> Float -> Int -> Int -> [(String, Float)]
 summary f now start stop = breakdown ++ totaltime
   where
     breakdown = totalOnEachTag f now start stop
-    totaltime :: [(String, Int)]
+    totaltime :: [(String, Float)]
     totaltime = (\a -> [("total", a)]) tot
-    tot :: Int
-    tot = (truncate . (1000*)) $ total (P.sessions f) now start stop
+    tot :: Float
+    tot = total (P.sessions f) now start stop
 
 -- It works out the total time spent on each tag in the given time
 -- period.
-totalOnEachTag :: P.Clocks -> Float -> Int -> Int -> [(String,Int)]
+totalOnEachTag :: P.Clocks -> Float -> Int -> Int -> [(String,Float)]
 totalOnEachTag f now start stop =
     map onetag tags 
   where
     -- The total spent on one tag.
-    onetag :: String -> (String, Int)
+    onetag :: String -> (String, Float)
     onetag tag = (\a -> (tag, a)) $ tagsum tag
     tags :: [String]
     tags = getTagsForPeriod now start stop (P.sessions f)
-    tagsum :: String -> Int
+    tagsum :: String -> Float
     tagsum tag = 
-        truncate . (1000*) . sum . map snd $
+        sum . map snd $
             dailyDurations f start stop [tag] now
 
 -- It finds all the tags in the clock file that are attached

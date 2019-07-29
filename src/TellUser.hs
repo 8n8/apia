@@ -27,14 +27,15 @@ module TellUser
 import qualified ArgParse as A
 import qualified Data.List as L
 import qualified ParseClockFile as P
+import Text.Printf (printf)
 
 data TellUser =
     HereIsTheClockState P.ClockFileState |
     HereIsYourDailyChart [(Int,Float)] |
     HereIsYourDailyMean Int |
-    HereIsYourSummary [(String,Int)] P.ClockFileState |
+    HereIsYourSummary [(String,Float)] P.ClockFileState |
     HereIsYourTagList [String] |
-    HereIsYourTodayChart [(String,Int)] P.ClockFileState |
+    HereIsYourTodayChart [(String,Float)] P.ClockFileState |
     HereIsYourTotal Float |
     TheClockFileIsBad P.BadLines |
     TheClockFileIsEmpty |
@@ -46,9 +47,6 @@ data TellUser =
     YouHaveMadeNewTags [String] |
     TheTimeIs Float
         deriving Eq
-
-i2f :: Int -> Float
-i2f = fromIntegral
 
 instance Show TellUser where
     show (HereIsTheClockState x) = show x
@@ -80,53 +78,47 @@ instance Show TellUser where
 
 -- It makes the chart that shows how the time has been spent today.  
 -- The inputs are the clock file state and a list of tag-time pairs.
-printSummaryChart :: P.ClockFileState -> [(String,Int)] -> [String]
+printSummaryChart :: P.ClockFileState -> [(String,Float)] -> [String]
 printSummaryChart c xs =
     zipWith makeString sortxs percents ++ [show c]
   where
+    sortxs :: [(String, Float)]
     sortxs = (L.sortBy sorter . init) xs ++ [last xs]
+    longestTag :: Int
     longestTag = maximum $ map (length . fst) sortxs
+    longestNum :: Int
     longestNum = maximum $ map (length . show . snd) sortxs
+    total :: Float
     total = snd . last $ sortxs
+    percents :: [String]
     percents = map (makePercent total . snd) sortxs
     maxPercents = maximum $ map length percents 
-    makeString :: (String, Int) -> String -> String
+    makeString :: (String, Float) -> String -> String
     makeString (tag, dur) percent =
         toNleft longestTag tag ++ "    " ++ 
-        formatNum (i2f dur) longestNum ++ "    " ++
+        (toNright longestNum $ printf "%.5f" dur) ++ "    " ++
         toNright maxPercents percent
 
-sorter :: (String, Int) -> (String, Int) -> Ordering
+sorter :: (String, Float) -> (String, Float) -> Ordering
 sorter (_, first) (_, second) 
     | first > second = LT
     | first < second = GT
     | otherwise = EQ
 
-makePercent :: Int -> Int -> String
+makePercent :: Float -> Float -> String
 makePercent 0 _ = "0%"
 makePercent total num =
-    show percent ++ "%"
+    percent ++ "%"
   where 
-    percent :: Int
-    percent = truncate $ int2float num * 100 / int2float total
-
-int2float :: Int -> Float
-int2float = fromIntegral
-
--- It takes a number, chops off everything after the decimal point,
--- and changes it to a string.
-num2str :: Float -> String
-num2str x = show (truncFloat x)
-
-truncFloat :: Float -> Int
-truncFloat = truncate
+    percent :: String
+    percent = toNright 6 $ printf "%.2f" $ num * 100 / total
   
 -- It takes in the data for one day, which is the day number and the
 -- time period, and turns it into a bar of a bar chart, like: 
 -- "174   34 ###" (without the quotes).
 makeBarForGraphic :: (Int,Float) -> String
 makeBarForGraphic (day,duration) =
-    show day ++ formatNum (duration * 1000) 5 ++
+    show day ++ (prettyDuration duration) ++
     ' ':replicate barLen '#'
   where
     -- The multiplier of 75 is about right so that the bars are a
@@ -134,9 +126,9 @@ makeBarForGraphic (day,duration) =
     barLen :: Int
     barLen = truncate (duration * 75)
 
--- It makes a float into a nice shortened string padded with spaces.
-formatNum :: Float -> Int -> String
-formatNum num n = toNright n (num2str num)
+prettyDuration :: Float -> String
+prettyDuration d =
+    toNright 10 $ printf "%.5f" d
 
 -- It increases the length of a string to a given length by adding
 -- spaces before it.
