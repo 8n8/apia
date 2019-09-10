@@ -32,7 +32,7 @@ import Text.Printf (printf)
 data TellUser =
     HereIsTheClockState P.ClockFileState |
     HereIsYourDailyChart [(Int,Float)] |
-    HereIsYourDailyMean Int |
+    HereIsYourDailyMean Float |
     HereIsYourSummary [(String,Float)] P.ClockFileState |
     HereIsYourTagList [String] |
     HereIsYourTodayChart [(String,Float)] P.ClockFileState |
@@ -52,7 +52,7 @@ instance Show TellUser where
     show (HereIsTheClockState x) = show x
     show (HereIsYourDailyChart table) =
         L.intercalate "\n" $ map makeBarForGraphic table
-    show (HereIsYourDailyMean mean) = show mean
+    show (HereIsYourDailyMean mean) = printf "%.5f" mean
     show (HereIsYourTagList tags) = L.intercalate "\n" tags
     show (HereIsYourTodayChart table cfs) =
         L.intercalate "\n" $ printSummaryChart cfs table

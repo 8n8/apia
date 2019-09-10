@@ -120,8 +120,7 @@ switcher _ (P.Clocks _ P.Empty) G.DailyMean{} = Actions
     , toFile = Nothing }
 switcher t f (G.DailyMean start stop tags) = Actions 
     { msg = Just (T.HereIsYourDailyMean (
-        (truncate . (1000 *)) $ 
-            A.daymean f start stop tags t))
+        A.daymean f start stop tags t))
     , toFile = Nothing }
 switcher _ (P.Clocks _ P.Empty) (G.Switch _) = Actions
     { msg = Just T.TheClockFileIsEmpty
